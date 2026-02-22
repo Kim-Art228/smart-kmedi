@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Услуги | Smart K-Medi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+
+        .fade     { opacity: 0; animation: fadeIn 0.5s ease-in-out forwards !important; }
+        .fade-out { animation: fadeOut 0.5s ease-in-out forwards !important; }
+        @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+        /* Scroll reveal */
+        .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .reveal-delay-1 { transition-delay: 0.08s; }
+        .reveal-delay-2 { transition-delay: 0.16s; }
+        .reveal-delay-3 { transition-delay: 0.24s; }
+        .reveal-delay-4 { transition-delay: 0.32s; }
+        .reveal-delay-5 { transition-delay: 0.40s; }
+        .reveal-delay-6 { transition-delay: 0.48s; }
+
+        /* Service card */
+        .service-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .service-card:hover { transform: translateY(-6px); box-shadow: 0 30px 60px -12px rgba(12, 74, 110, 0.18); }
+        .service-card:hover .card-arrow { transform: translateX(4px); }
+        .card-arrow { transition: transform 0.3s ease; }
+
+        /* Hero accent line */
+        .accent-line {
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, #0ea5e9, #38bdf8, transparent);
+            border-radius: 4px;
+        }
+
+        /* Process step connector */
+        .step-connector {
+            position: absolute;
+            top: 50%;
+            right: -2rem;
+            width: 2rem;
+            height: 2px;
+            background: linear-gradient(to right, #bae6fd, #0ea5e9);
+        }
+
+        /* Blob */
+        .blob { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; }
+
+        /* Ping animation */
+        @keyframes ping { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2.2); opacity: 0; } }
+        .ping-anim { animation: ping 1.5s ease-out infinite; }
+
+        /* Tab active */
+        .tab-btn.active { background: #0c4a6e; color: #fff; }
+        .tab-btn { transition: all 0.2s; }
+
+        /* Lang dropdown */
+        #lang-dropdown {
+            position: absolute; right: 0; top: calc(100% + 10px);
+            width: 224px; background: #fff; border-radius: 20px;
+            border: 1.5px solid #e2e8f0;
+            box-shadow: 0 20px 40px rgba(12,74,110,.15);
+            padding: 8px; z-index: 9999;
+            opacity: 0; pointer-events: none; transform: translateY(-8px);
+            transition: opacity .22s ease, transform .22s ease;
+        }
+        #lang-dropdown.open { opacity: 1; pointer-events: all; transform: translateY(0); }
+        .lang-option { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px; border-radius: 12px; border: none; background: transparent; cursor: pointer; font-family: inherit; text-align: left; transition: background .15s; }
+        .lang-option:hover { background: #f0f9ff; }
+        .lang-option.active { background: #eff6ff; }
+        .lang-option.active .lang-name { color: #0284c7; font-weight: 700; }
+        .lang-option .lang-check { margin-left: auto; color: #0284c7; font-weight: 900; font-size: 14px; opacity: 0; }
+        .lang-option.active .lang-check { opacity: 1; }
+        .flag-img { font-size: 22px; flex-shrink: 0; }
+        .lang-name { font-size: 13px; font-weight: 600; color: #334155; }
+        .lang-sub { font-size: 11px; color: #94a3b8; margin-top: 1px; }
+        #lang-chevron { transition: transform .25s ease; }
+        #lang-chevron.rotated { transform: rotate(180deg); }
+    </style>
+</head>
+<body class="bg-sky-50 text-slate-900 min-h-screen fade">
+
+<!-- ══ NAV ══════════════════════════════════════════════ -->
+<nav class="sticky top-0 z-50 bg-white/30 backdrop-blur-lg border border-white/20 shadow px-6 py-4">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+        <a href="1homepage.html">
+            <div class="text-2xl font-black tracking-tighter text-sky-400 italic">Smart <span class="text-sky-900">K-Medi</span></div>
+        </a>
+        <div class="hidden lg:flex space-x-8 text-sm font-bold text-slate-600 uppercase">
+            <a href="#" class="hover:text-sky-900 drop-shadow-[0_0_20px_rgba(56,189,248,0.8)]" data-i18n="nav_destinations">Destinations</a>
+            <a href="catalog.html" class="hover:text-sky-900 drop-shadow-[0_0_20px_rgba(56,189,248,0.8)]" data-i18n="nav_catalog">Clinic Catalog</a>
+            <a href="services.html" class="hover:text-sky-900 border-b-2 border-sky-400 text-sky-900" data-i18n="nav_service">Service</a>
+            <a href="aboutus.html" class="hover:text-sky-900 drop-shadow-[0_0_20px_rgba(56,189,248,0.8)]" data-i18n="nav_about">About Us</a>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="relative" id="lang-switcher">
+                <button onclick="toggleLang(event)" id="lang-trigger"
+                    class="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-full text-sm font-bold cursor-pointer hover:border-sky-400 hover:shadow-[0_0_0_3px_rgba(14,165,233,0.08)] transition-all">
+                    <span id="lang-flag">🇷🇺</span>
+                    <span id="lang-current">RU</span>
+                    <svg id="lang-chevron" class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div id="lang-dropdown">
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-slate-400 px-3 py-2 border-b border-slate-100 mb-1" data-i18n="lang_title">Select language</div>
+                    <button onclick="selectLang('ru','🇷🇺','RU',this)" class="lang-option active" id="opt-ru">
+                        <span class="flag-img">🇷🇺</span>
+                        <div class="flex-1"><div class="lang-name">Русский</div><div class="lang-sub">Russian</div></div>
+                        <span class="lang-check">✓</span>
+                    </button>
+                    <button onclick="selectLang('en','🇬🇧','EN',this)" class="lang-option" id="opt-en">
+                        <span class="flag-img">🇬🇧</span>
+                        <div class="flex-1"><div class="lang-name">English</div><div class="lang-sub">English</div></div>
+                        <span class="lang-check">✓</span>
+                    </button>
+                    <button onclick="selectLang('ko','🇰🇷','한국어',this)" class="lang-option" id="opt-ko">
+                        <span class="flag-img">🇰🇷</span>
+                        <div class="flex-1"><div class="lang-name">한국어</div><div class="lang-sub">Korean</div></div>
+                        <span class="lang-check">✓</span>
+                    </button>
+                </div>
+            </div>
+            <a href="1clientpage.html" class="bg-sky-600 text-white px-6 py-2.5 rounded-full font-bold text-sm shadow-lg shadow-sky-200 hover:bg-sky-700 transition" data-i18n="nav_account">Personal account</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ══ HERO ══════════════════════════════════════════════ -->
+    <div id="page-content">
+<section class="relative pt-20 pb-28 px-6 overflow-hidden bg-white">
+    <div class="blob w-[500px] h-[500px] bg-sky-200/40 -top-32 -right-32"></div>
+    <div class="blob w-[350px] h-[350px] bg-blue-100/60 bottom-0 -left-20"></div>
+
+    <div class="max-w-7xl mx-auto relative z-10">
+        <div class="max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-blue-50 text-sky-900 text-[11px] font-black uppercase mb-6 border border-blue-100">
+                <span class="relative flex h-2 w-2">
+                    <span class="ping-anim absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span>
+                </span>
+                <span data-i18n="hero_badge">360° Medical Support</span>
+            </div>
+            <h1 class="text-5xl lg:text-6xl font-extrabold leading-[1.08] text-slate-900 mb-8" data-i18n="hero_h1">
+                Всё, что нужно<br>для лечения в Корее —<br><span class="text-sky-500 underline decoration-blue-200 decoration-8 underline-offset-4">в одном месте</span>
+            </h1>
+            <p class="text-lg text-slate-500 leading-relaxed max-w-xl" data-i18n="hero_desc">
+                От первичной консультации и подбора клиники до перелёта, проживания и послеоперационного сопровождения. Мы берём на себя всё.
+            </p>
+        </div>
+
+        <!-- Quick service tabs -->
+        <div class="flex flex-wrap gap-3 mt-12">
+            <button onclick="scrollToSection('medical')" class="tab-btn px-5 py-2.5 bg-sky-900 text-white rounded-full text-xs font-black uppercase tracking-widest active" data-i18n="tab_medical">Медицина</button>
+            <button onclick="scrollToSection('logistics')" class="tab-btn px-5 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-full text-xs font-black uppercase tracking-widest hover:border-sky-400 hover:text-sky-900" data-i18n="tab_logistics">Логистика</button>
+            <button onclick="scrollToSection('legal')" class="tab-btn px-5 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-full text-xs font-black uppercase tracking-widest hover:border-sky-400 hover:text-sky-900" data-i18n="tab_legal">Юридические</button>
+            <button onclick="scrollToSection('support')" class="tab-btn px-5 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-full text-xs font-black uppercase tracking-widest hover:border-sky-400 hover:text-sky-900" data-i18n="tab_support">Поддержка</button>
+        </div>
+    </div>
+</section>
+
+<!-- ══ HOW IT WORKS (process) ════════════════════════════ -->
+<section class="py-20 px-6 bg-sky-900 text-white reveal">
+    <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-14">
+            <div class="text-sky-400 font-black text-[10px] uppercase tracking-[0.3em] mb-3 italic" data-i18n="process_label">How it works</div>
+            <h2 class="text-3xl font-black" data-i18n="process_title">Как мы работаем</h2>
+        </div>
+        <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+            <div class="relative text-center p-6 bg-white/5 border border-white/10 rounded-[2rem] hover:bg-sky-800 transition">
+                <div class="text-3xl mb-4">🤖</div>
+                <div class="text-[10px] font-black text-sky-400 uppercase italic mb-2" data-i18n="step1_num">Шаг 01</div>
+                <div class="text-sm font-bold" data-i18n="step1_title">AI-подбор клиники</div>
+                <div class="hidden lg:block step-connector"></div>
+            </div>
+            <div class="relative text-center p-6 bg-white/5 border border-white/10 rounded-[2rem] hover:bg-sky-800 transition">
+                <div class="text-3xl mb-4">📋</div>
+                <div class="text-[10px] font-black text-sky-400 uppercase italic mb-2" data-i18n="step2_num">Шаг 02</div>
+                <div class="text-sm font-bold" data-i18n="step2_title">Консультация & план</div>
+                <div class="hidden lg:block step-connector"></div>
+            </div>
+            <div class="relative text-center p-6 bg-white/5 border border-white/10 rounded-[2rem] hover:bg-sky-800 transition">
+                <div class="text-3xl mb-4">✈️</div>
+                <div class="text-[10px] font-black text-sky-400 uppercase italic mb-2" data-i18n="step3_num">Шаг 03</div>
+                <div class="text-sm font-bold" data-i18n="step3_title">Виза, билеты, отель</div>
+                <div class="hidden lg:block step-connector"></div>
+            </div>
+            <div class="relative text-center p-6 bg-white/5 border border-white/10 rounded-[2rem] hover:bg-sky-800 transition">
+                <div class="text-3xl mb-4">🏥</div>
+                <div class="text-[10px] font-black text-sky-400 uppercase italic mb-2" data-i18n="step4_num">Шаг 04</div>
+                <div class="text-sm font-bold" data-i18n="step4_title">Лечение в Корее</div>
+                <div class="hidden lg:block step-connector"></div>
+            </div>
+            <div class="text-center p-6 bg-sky-600/30 border border-sky-400/30 rounded-[2rem] hover:bg-sky-700 transition">
+                <div class="text-3xl mb-4">💬</div>
+                <div class="text-[10px] font-black text-sky-400 uppercase italic mb-2" data-i18n="step5_num">Шаг 05</div>
+                <div class="text-sm font-bold" data-i18n="step5_title">Поддержка дома</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ MEDICAL SERVICES ════════════════════════════════════ -->
+<section id="medical" class="py-28 px-6 bg-white">
+    <div class="max-w-7xl mx-auto">
+        <div class="mb-16 reveal">
+            <div class="text-sky-500 font-black text-[10px] uppercase tracking-[0.3em] mb-3 italic" data-i18n="medical_label">Medical</div>
+            <h2 class="text-4xl font-black text-slate-900" data-i18n="medical_title">Медицинские услуги</h2>
+            <p class="text-slate-400 mt-3 max-w-xl" data-i18n="medical_desc">Подбираем клиники только с JCI-аккредитацией и прямыми контрактами</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            <div class="service-card reveal reveal-delay-1 relative bg-sky-50 rounded-[2.5rem] p-8 border border-sky-100 overflow-hidden group cursor-pointer">
+                <div class="accent-line"></div>
+                <div class="text-4xl mb-5">🦷</div>
+                <h3 class="text-xl font-black text-slate-900 mb-2" data-i18n="med1_title">Стоматология</h3>
+                <p class="text-sm text-slate-500 leading-relaxed mb-6" data-i18n="med1_text">Имплантация, виниры, ортодонтия. Корейские клиники предлагают качество уровня Европы по цене вдвое ниже.</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-black text-sky-600 bg-sky-100 px-3 py-1 rounded-full" data-i18n="med1_price">от $800</span>
+                    <span class="card-arrow text-sky-500 font-black">→</span>
+                </div>
+            </div>
+
+            <div class="service-card reveal reveal-delay-2 relative bg-sky-50 rounded-[2.5rem] p-8 border border-sky-100 overflow-hidden group cursor-pointer">
+                <div class="accent-line"></div>
+                <div class="text-4xl mb-5">✨</div>
+                <h3 class="text-xl font-black text-slate-900 mb-2" data-i18n="med2_title">Пластическая хирургия</h3>
+                <p class="text-sm text-slate-500 leading-relaxed mb-6" data-i18n="med2_text">Ринопластика, блефаропластика, контурная пластика. Корея — мировой лидер в эстетической медицине.</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-black text-sky-600 bg-sky-100 px-3 py-1 rounded-full" data-i18n="med2_price">от $2,500</span>
+                    <span class="card-arrow text-sky-500 font-black">→</span>
+                </div>
+            </div>
+
+            <div class="service-card reveal reveal-delay-3 relative bg-sky-900 rounded-[2.5rem] p-8 overflow-hidden group cursor-pointer text-white">
+                <div class="text-4xl mb-5">🔬</div>
+                <h3 class="text-xl font-black mb-2" data-i18n="med3_title">Комплексная диагностика</h3>
+                <p class="text-sm text-sky-200 leading-relaxed mb-6" data-i18n="med3_text">Полный чек-ап за 1–2 дня: МРТ, ПЭТ/КТ, генетические тесты, онкомаркеры — всё в одном центре.</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-black text-sky-900 bg-sky-400 px-3 py-1 rounded-full" data-i18n="med3_price">от $1,200</span>
+                    <span class="card-arrow text-sky-400 font-black">→</span>
+                </div>
+            </div>
+
+            <div class="service-card reveal reveal-delay-4 relative bg-sky-50 rounded-[2.5rem] p-8 border border-sky-100 overflow-hidden group cursor-pointer">
+                <div class="accent-line"></div>
+                <div class="text-4xl mb-5">❤️</div>
+                <h3 class="text-xl font-black text-slate-900 mb-2" data-i18n="med4_title">Кардиология</h3>
+                <p class="text-sm text-slate-500 leading-relaxed mb-6" data-i18n="med4_text">Коронарография, стентирование, операции на открытом сердце. Топовые кардиохирурги мирового уровня.</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-black text-sky-600 bg-sky-100 px-3 py-1 rounded-full" data-i18n="med4_price">от $5,000</span>
+                    <span class="card-arrow text-sky-500 font-black">→</span>
+                </div>
+            </div>
+
+            <div class="service-card reveal reveal-delay-5 relative bg-sky-50 rounded-[2.5rem] p-8 border border-sky-100 overflow-hidden group cursor-pointer">
+                <div class="accent-line"></div>
+                <div class="text-4xl mb-5">🧬</div>
+                <h3 class="text-xl font-black text-slate-900 mb-2" data-i18n="med5_title">Онкология</h3>
+                <p class="text-sm text-slate-500 leading-relaxed mb-6" data-i18n="med5_text">Протонная и лучевая терапия, робот-ассистированные операции, иммунотерапия в ведущих онкоцентрах.</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-black text-sky-600 bg-sky-100 px-3 py-1 rounded-full" data-i18n="med5_price">от $8,000</span>
+                    <span class="card-arrow text-sky-500 font-black">→</span>
+                </div>
+            </div>
+
+            <div class="service-card reveal reveal-delay-6 relative bg-sky-50 rounded-[2.5rem] p-8 border border-sky-100 overflow-hidden group cursor-pointer">
+                <div class="accent-line"></div>
+                <div class="text-4xl mb-5">👶</div>
+                <h3 class="text-xl font-black text-slate-900 mb-2" data-i18n="med6_title">ЭКО и репродуктология</h3>
+                <p class="text-sm text-slate-500 leading-relaxed mb-6" data-i18n="med6_text">Корея входит в топ-5 стран по успешности ЭКО. Современные протоколы, генетический скрининг эмбрионов.</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-black text-sky-600 bg-sky-100 px-3 py-1 rounded-full" data-i18n="med6_price">от $3,500</span>
+                    <span class="card-arrow text-sky-500 font-black">→</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ══ LOGISTICS SERVICES ═════════════════════════════════ -->
+<section id="logistics" class="py-28 px-6 bg-slate-50">
+    <div class="max-w-7xl mx-auto">
+        <div class="mb-16 reveal">
+            <div class="text-sky-500 font-black text-[10px] uppercase tracking-[0.3em] mb-3 italic" data-i18n="logistics_label">Logistics</div>
+            <h2 class="text-4xl font-black text-slate-900" data-i18n="logistics_title">Логистика и сервис</h2>
+            <p class="text-slate-400 mt-3 max-w-xl" data-i18n="logistics_desc">Организуем всё путешествие — от визы до трансфера из аэропорта</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+
+            <div class="service-card reveal reveal-delay-1 bg-white rounded-[2.5rem] p-10 border border-slate-100 shadow-lg flex gap-8">
+                <div class="w-16 h-16 bg-sky-50 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0">🛂</div>
+                <div>
+                    <h3 class="text-xl font-black text-slate-900 mb-2" data-i18n="log1_title">Визовая поддержка</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed mb-4" data-i18n="log1_text">Подготовка документов, оформление медицинской визы в Корею, сопровождение в консульстве. Успешность 99.8%.</p>
+                    <div class="flex gap-2 flex-wrap">
+                        <span class="text-[10px] font-bold bg-sky-50 text-sky-700 px-3 py-1 rounded-full border border-sky-100" data-i18n="log1_tag1">E-6 виза</span>
+                        <span class="text-[10px] font-bold bg-sky-50 text-sky-700 px-3 py-1 rounded-full border border-sky-100" data-i18n="log1_tag2">Срочное оформление</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="service-card reveal reveal-delay-2 bg-white rounded-[2.5rem] p-10 border border-slate-100 shadow-lg flex gap-8">
+                <div class="w-16 h-16 bg-sky-50 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0">✈️</div>
+                <div>
+                    <h3 class="text-xl font-black text-slate-900 mb-2" data-i18n="log2_title">Авиабилеты и отель</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed mb-4" data-i18n="log2_text">Подбираем оптимальные рейсы и размещение рядом с клиникой. VIP-трансфер из аэропорта Инчхон.</p>
+                    <div class="flex gap-2 flex-wrap">
+                        <span class="text-[10px] font-bold bg-sky-50 text-sky-700 px-3 py-1 rounded-full border border-sky-100" data-i18n="log2_tag1">Бизнес-класс</span>
+                        <span class="text-[10px] font-bold bg-sky-50 text-sky-700 px-3 py-1 rounded-full border border-sky-100" data-i18n="log2_tag2">5★ отели</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="service-card reveal reveal-delay-3 bg-white rounded-[2.5rem] p-10 border border-slate-100 shadow-lg flex gap-8">
+                <div class="w-16 h-16 bg-sky-50 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0">🗣️</div>
+                <div>
+                    <h3 class="text-xl font-black text-slate-900 mb-2" data-i18n="log3_title">Переводчик-координатор</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed mb-4" data-i18n="log3_text">Медицинский переводчик с вами на каждом приёме. Перевод документов, эпикризов, рецептов, анализов.</p>
+                    <div class="flex gap-2 flex-wrap">
+                        <span class="text-[10px] font-bold bg-sky-50 text-sky-700 px-3 py-1 rounded-full border border-sky-100" data-i18n="log3_tag1">RU / EN / KO</span>
+                        <span class="text-[10px] font-bold bg-sky-50 text-sky-700 px-3 py-1 rounded-full border border-sky-100" data-i18n="log3_tag2">Мед. терминология</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="service-card reveal reveal-delay-4 bg-white rounded-[2.5rem] p-10 border border-slate-100 shadow-lg flex gap-8">
+                <div class="w-16 h-16 bg-sky-50 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0">🏨</div>
+                <div>
+                    <h3 class="text-xl font-black text-slate-900 mb-2" data-i18n="log4_title">Восстановительный тур</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed mb-4" data-i18n="log4_text">Реабилитация в Корее совмещённая с культурной программой: Сеул, Чеджудо, термальные курорты.</p>
+                    <div class="flex gap-2 flex-wrap">
+                        <span class="text-[10px] font-bold bg-sky-50 text-sky-700 px-3 py-1 rounded-full border border-sky-100" data-i18n="log4_tag1">Welness-программы</span>
+                        <span class="text-[10px] font-bold bg-sky-50 text-sky-700 px-3 py-1 rounded-full border border-sky-100" data-i18n="log4_tag2">Экскурсии</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ LEGAL SERVICES ══════════════════════════════════════ -->
+<section id="legal" class="py-28 px-6 bg-white">
+    <div class="max-w-7xl mx-auto">
+        <div class="mb-16 reveal">
+            <div class="text-sky-500 font-black text-[10px] uppercase tracking-[0.3em] mb-3 italic" data-i18n="legal_label">Legal</div>
+            <h2 class="text-4xl font-black text-slate-900" data-i18n="legal_title">Юридические услуги</h2>
+            <p class="text-slate-400 mt-3 max-w-xl" data-i18n="legal_desc">Полная правовая защита на всех этапах лечения за рубежом</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="service-card reveal reveal-delay-1 relative bg-sky-900 text-white rounded-[2.5rem] p-8 overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-sky-700/40 rounded-full -translate-y-12 translate-x-12"></div>
+                <div class="text-4xl mb-5 relative z-10">📄</div>
+                <h3 class="text-xl font-black mb-2 relative z-10" data-i18n="leg1_title">Официальный договор</h3>
+                <p class="text-sm text-sky-200 leading-relaxed relative z-10" data-i18n="leg1_text">Прямой контракт с клиникой на корейском и русском языках. Фиксированная стоимость, никаких доплат.</p>
+            </div>
+            <div class="service-card reveal reveal-delay-2 relative bg-sky-50 rounded-[2.5rem] p-8 border border-sky-100">
+                <div class="text-4xl mb-5">🛡️</div>
+                <h3 class="text-xl font-black text-slate-900 mb-2" data-i18n="leg2_title">Страхование рисков</h3>
+                <p class="text-sm text-slate-500 leading-relaxed" data-i18n="leg2_text">Медицинская страховка для лечения за рубежом, страхование от осложнений и экстренная репатриация.</p>
+            </div>
+            <div class="service-card reveal reveal-delay-3 relative bg-sky-50 rounded-[2.5rem] p-8 border border-sky-100">
+                <div class="text-4xl mb-5">⚖️</div>
+                <h3 class="text-xl font-black text-slate-900 mb-2" data-i18n="leg3_title">Защита интересов</h3>
+                <p class="text-sm text-slate-500 leading-relaxed" data-i18n="leg3_text">Международный медицинский юрист на связи 24/7. Решаем спорные ситуации с клиниками и страховыми.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ SUPPORT SERVICES ════════════════════════════════════ -->
+<section id="support" class="py-28 px-6 bg-slate-50">
+    <div class="max-w-7xl mx-auto">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+            <div class="reveal">
+                <div class="text-sky-500 font-black text-[10px] uppercase tracking-[0.3em] mb-3 italic" data-i18n="support_label">Support</div>
+                <h2 class="text-4xl font-black text-slate-900 mb-6" data-i18n="support_title">Поддержка 24/7</h2>
+                <p class="text-slate-500 leading-relaxed mb-10" data-i18n="support_desc">Личный координатор на русском языке доступен в любое время — до, во время и после лечения.</p>
+                <div class="space-y-5">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-sky-900 rounded-xl flex items-center justify-center text-white font-black flex-shrink-0 text-sm">01</div>
+                        <div>
+                            <div class="font-black text-slate-900 mb-1" data-i18n="sup1_title">До поездки</div>
+                            <div class="text-sm text-slate-500" data-i18n="sup1_text">Консультация, подбор клиники, ответы на все вопросы, подготовка медицинских документов.</div>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-sky-500 rounded-xl flex items-center justify-center text-white font-black flex-shrink-0 text-sm">02</div>
+                        <div>
+                            <div class="font-black text-slate-900 mb-1" data-i18n="sup2_title">Во время лечения</div>
+                            <div class="text-sm text-slate-500" data-i18n="sup2_text">Переводчик на приёмах, сопровождение в клинике, помощь с бытовыми вопросами в Корее.</div>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-sky-300 rounded-xl flex items-center justify-center text-sky-900 font-black flex-shrink-0 text-sm">03</div>
+                        <div>
+                            <div class="font-black text-slate-900 mb-1" data-i18n="sup3_title">После возвращения</div>
+                            <div class="text-sm text-slate-500" data-i18n="sup3_text">Удалённые консультации с корейскими врачами, контроль реабилитации, перевод рекомендаций.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Support card -->
+            <div class="reveal reveal-delay-2">
+                <div class="bg-sky-900 rounded-[3rem] p-10 text-white relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-48 h-48 bg-sky-700/30 rounded-full -translate-y-16 translate-x-16"></div>
+                    <div class="absolute bottom-0 left-0 w-32 h-32 bg-sky-800/50 rounded-full translate-y-10 -translate-x-10"></div>
+                    <div class="relative z-10">
+                        <div class="text-5xl font-black italic tracking-tighter mb-2">24/7</div>
+                        <div class="text-sky-400 font-black text-xs uppercase tracking-widest mb-8" data-i18n="support_badge">Персональный координатор</div>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3 bg-white/10 rounded-2xl px-5 py-4">
+                                <span class="text-xl">💬</span>
+                                <div>
+                                    <div class="font-bold text-sm" data-i18n="ch_whatsapp">WhatsApp / Telegram</div>
+                                    <div class="text-xs text-sky-300" data-i18n="ch_whatsapp_sub">Ответ в течение 15 минут</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 bg-white/10 rounded-2xl px-5 py-4">
+                                <span class="text-xl">📞</span>
+                                <div>
+                                    <div class="font-bold text-sm" data-i18n="ch_phone">Телефонный звонок</div>
+                                    <div class="text-xs text-sky-300" data-i18n="ch_phone_sub">Прямая линия координатора</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 bg-white/10 rounded-2xl px-5 py-4">
+                                <span class="text-xl">🤖</span>
+                                <div>
+                                    <div class="font-bold text-sm" data-i18n="ch_ai">AI-чатбот</div>
+                                    <div class="text-xs text-sky-300" data-i18n="ch_ai_sub">Мгновенные ответы на вопросы</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ══ CTA ════════════════════════════════════════════════ -->
+<section class="relative py-24 px-6 overflow-hidden reveal">
+    <img src="images/shutterstock_1022274595.jpg" class="absolute inset-0 w-full h-full object-cover" />
+    <div class="absolute inset-0 bg-sky-900/80 backdrop-blur-sm"></div>
+    <div class="relative z-10 max-w-2xl mx-auto text-center text-white">
+        <h2 class="text-4xl font-black mb-5 leading-tight" data-i18n="cta_title">Не знаете с чего начать?</h2>
+        <p class="text-sky-200 mb-10" data-i18n="cta_desc">Пройдите AI-опрос за 3 минуты — и мы подберём нужные услуги и клинику именно для вашего случая.</p>
+        <a href="1aipage.html" class="inline-flex items-center gap-3 bg-white text-sky-900 px-10 py-5 rounded-full font-black text-sm hover:bg-sky-50 transition shadow-2xl" data-i18n="cta_btn">
+            Начать AI-подбор
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </a>
+    </div>
+</section>
+
+<!-- ══ FOOTER ══════════════════════════════════════════════ -->
+<footer class="bg-sky-900 text-slate-300 pt-20 pb-10 border-t border-sky-800">
+    <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+        <div class="space-y-6">
+            <div class="text-3xl font-extrabold text-white">Smart <span class="text-blue-500">K-Medi</span></div>
+            <p class="text-sm leading-relaxed text-slate-400" data-i18n="footer_desc">Мы используем искусственный интеллект, чтобы сделать высокотехнологичную медицину доступной для всех.</p>
+            <div class="flex gap-4">
+                <a href="#" class="w-10 h-10 rounded-full bg-sky-800 flex items-center justify-center hover:bg-sky-700 transition text-white">FB</a>
+                <a href="#" class="w-10 h-10 rounded-full bg-sky-800 flex items-center justify-center hover:bg-sky-700 transition text-white">IG</a>
+                <a href="#" class="w-10 h-10 rounded-full bg-sky-800 flex items-center justify-center hover:bg-sky-700 transition text-white">TG</a>
+            </div>
+        </div>
+        <div>
+            <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm" data-i18n="footer_col1">Направления</h4>
+            <ul class="space-y-4 text-sm">
+                <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_onco">Онкология</a></li>
+                <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_cardio">Кардиология</a></li>
+                <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_dent">Стоматология</a></li>
+                <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_plastic">Пластическая хирургия</a></li>
+                <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_checkup">Чек-ап программы</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm" data-i18n="footer_col2">Пациентам</h4>
+            <ul class="space-y-4 text-sm">
+                <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_how">Как это работает</a></li>
+                <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_search">Поиск клиники</a></li>
+                <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_insurance">Страхование</a></li>
+                <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_faq">FAQ</a></li>
+                <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_blog">Медицинский блог</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm" data-i18n="footer_col3">Контакты</h4>
+            <div class="space-y-4 text-sm">
+                <p class="flex items-start gap-3 text-slate-400"><span>📍</span><span data-i18n="footer_addr">123456, Москва, Пресненская наб., 12, офис 45</span></p>
+                <p class="flex items-center gap-3 font-bold text-white"><span>📞</span><span>8 (800) 555-35-35</span></p>
+                <p class="flex items-center gap-3 text-slate-400 italic"><span>✉️</span><span>support@smart_k_medi.com</span></p>
+            </div>
+        </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-6 pt-8 border-t border-sky-800 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
+        <p data-i18n="footer_copy">© 2026 Smart K-Medi Solutions. Все права защищены.</p>
+        <div class="flex gap-6">
+            <a href="#" class="hover:text-white transition" data-i18n="footer_privacy">Политика конфиденциальности</a>
+            <a href="#" class="hover:text-white transition" data-i18n="footer_terms">Пользовательское соглашение</a>
+        </div>
+    </div>
+</footer>
+
+<button id="ai-chatbot-btn" class="fixed bottom-6 right-6 z-50 text-white rounded-full flex items-center justify-center w-16 h-16 shadow-2xl backdrop-blur-md bg-sky-900/50 border border-white/60 hover:bg-white/20 transition">
+    <img src="images/ai.png" alt="AI" class="w-8 h-8">
+</button>
+<a href="tel:+82XXXXXXXXX" class="fixed bottom-6 left-6 z-50 text-white rounded-full px-6 py-4 font-bold text-sm flex items-center gap-3 backdrop-blur-md bg-green-500/30 border border-green-400/30 shadow-2xl hover:bg-green-400/30 transition">
+    <img src="images/phone.png" alt="Phone" class="w-5 h-5">
+    <span data-i18n="fab_phone">Срочно: +82-XXX-XXXX</span>
+</a>
+</div>
+<script>
+/* ══════════════════════════════════════
+   TRANSLATIONS
+══════════════════════════════════════ */
+const T = {
+    ru: {
+        lang_title:'Выберите язык',
+        nav_destinations:'Направления', nav_catalog:'Каталог клиник',
+        nav_service:'Сервис', nav_about:'О нас', nav_account:'Личный кабинет',
+        hero_badge:'360° Медицинское сопровождение',
+        hero_h1:'Всё, что нужно<br>для лечения в Корее —<br><span class="text-sky-500 underline decoration-blue-200 decoration-8 underline-offset-4">в одном месте</span>',
+        hero_desc:'От первичной консультации и подбора клиники до перелёта, проживания и послеоперационного сопровождения. Мы берём на себя всё.',
+        tab_medical:'Медицина', tab_logistics:'Логистика', tab_legal:'Юридические', tab_support:'Поддержка',
+        process_label:'Как это работает', process_title:'Как мы работаем',
+        step1_num:'Шаг 01', step1_title:'AI-подбор клиники',
+        step2_num:'Шаг 02', step2_title:'Консультация & план',
+        step3_num:'Шаг 03', step3_title:'Виза, билеты, отель',
+        step4_num:'Шаг 04', step4_title:'Лечение в Корее',
+        step5_num:'Шаг 05', step5_title:'Поддержка дома',
+        medical_label:'Медицина', medical_title:'Медицинские услуги',
+        medical_desc:'Подбираем клиники только с JCI-аккредитацией и прямыми контрактами',
+        med1_title:'Стоматология', med1_text:'Имплантация, виниры, ортодонтия. Корейские клиники предлагают качество уровня Европы по цене вдвое ниже.', med1_price:'от $800',
+        med2_title:'Пластическая хирургия', med2_text:'Ринопластика, блефаропластика, контурная пластика. Корея — мировой лидер в эстетической медицине.', med2_price:'от $2,500',
+        med3_title:'Комплексная диагностика', med3_text:'Полный чек-ап за 1–2 дня: МРТ, ПЭТ/КТ, генетические тесты, онкомаркеры — всё в одном центре.', med3_price:'от $1,200',
+        med4_title:'Кардиология', med4_text:'Коронарография, стентирование, операции на открытом сердце. Топовые кардиохирурги мирового уровня.', med4_price:'от $5,000',
+        med5_title:'Онкология', med5_text:'Протонная и лучевая терапия, робот-ассистированные операции, иммунотерапия в ведущих онкоцентрах.', med5_price:'от $8,000',
+        med6_title:'ЭКО и репродуктология', med6_text:'Корея входит в топ-5 стран по успешности ЭКО. Современные протоколы, генетический скрининг эмбрионов.', med6_price:'от $3,500',
+        logistics_label:'Логистика', logistics_title:'Логистика и сервис',
+        logistics_desc:'Организуем всё путешествие — от визы до трансфера из аэропорта',
+        log1_title:'Визовая поддержка', log1_text:'Подготовка документов, оформление медицинской визы в Корею, сопровождение в консульстве. Успешность 99.8%.', log1_tag1:'E-6 виза', log1_tag2:'Срочное оформление',
+        log2_title:'Авиабилеты и отель', log2_text:'Подбираем оптимальные рейсы и размещение рядом с клиникой. VIP-трансфер из аэропорта Инчхон.', log2_tag1:'Бизнес-класс', log2_tag2:'5★ отели',
+        log3_title:'Переводчик-координатор', log3_text:'Медицинский переводчик с вами на каждом приёме. Перевод документов, эпикризов, рецептов, анализов.', log3_tag1:'RU / EN / KO', log3_tag2:'Мед. терминология',
+        log4_title:'Восстановительный тур', log4_text:'Реабилитация в Корее совмещённая с культурной программой: Сеул, Чеджудо, термальные курорты.', log4_tag1:'Wellness-программы', log4_tag2:'Экскурсии',
+        legal_label:'Юридические', legal_title:'Юридические услуги',
+        legal_desc:'Полная правовая защита на всех этапах лечения за рубежом',
+        leg1_title:'Официальный договор', leg1_text:'Прямой контракт с клиникой на корейском и русском языках. Фиксированная стоимость, никаких доплат.',
+        leg2_title:'Страхование рисков', leg2_text:'Медицинская страховка для лечения за рубежом, страхование от осложнений и экстренная репатриация.',
+        leg3_title:'Защита интересов', leg3_text:'Международный медицинский юрист на связи 24/7. Решаем спорные ситуации с клиниками и страховыми.',
+        support_label:'Поддержка', support_title:'Поддержка 24/7',
+        support_desc:'Личный координатор на русском языке доступен в любое время — до, во время и после лечения.',
+        sup1_title:'До поездки', sup1_text:'Консультация, подбор клиники, ответы на все вопросы, подготовка медицинских документов.',
+        sup2_title:'Во время лечения', sup2_text:'Переводчик на приёмах, сопровождение в клинике, помощь с бытовыми вопросами в Корее.',
+        sup3_title:'После возвращения', sup3_text:'Удалённые консультации с корейскими врачами, контроль реабилитации, перевод рекомендаций.',
+        support_badge:'Персональный координатор',
+        ch_whatsapp:'WhatsApp / Telegram', ch_whatsapp_sub:'Ответ в течение 15 минут',
+        ch_phone:'Телефонный звонок', ch_phone_sub:'Прямая линия координатора',
+        ch_ai:'AI-чатбот', ch_ai_sub:'Мгновенные ответы на вопросы',
+        packages_label:'Цены', packages_title:'Пакеты услуг',
+        packages_desc:'Выберите уровень сопровождения под ваши задачи',
+        pkg1_label:'Basic', pkg1_sub:'Комиссия с клиники', pkg1_f1:'AI-подбор клиники', pkg1_f2:'Консультация онлайн', pkg1_f3:'Помощь с документами', pkg1_f4:'Сопровождение в Корее', pkg1_f5:'Переводчик на приёмах',
+        pkg2_badge:'Популярный', pkg2_sub:'Единоразово за поездку', pkg2_f1:'Всё из Basic', pkg2_f2:'Переводчик 3 дня', pkg2_f3:'Трансфер из аэропорта', pkg2_f4:'Помощь с отелем', pkg2_f5:'Юридическое сопровождение',
+        pkg3_sub:'Полное сопровождение', pkg3_f1:'Всё из Standard', pkg3_f2:'Переводчик весь срок', pkg3_f3:'Юридическое сопровождение', pkg3_f4:'Страхование рисков', pkg3_f5:'Поддержка после лечения 30 дней',
+        pkg_btn:'Начать бесплатно', pkg_btn2:'Выбрать Standard', pkg_btn3:'Выбрать VIP',
+        cta_title:'Не знаете с чего начать?',
+        cta_desc:'Пройдите AI-опрос за 3 минуты — и мы подберём нужные услуги и клинику именно для вашего случая.',
+        cta_btn:'Начать AI-подбор',
+        footer_desc:'Мы используем искусственный интеллект, чтобы сделать высокотехнологичную медицину доступной для всех.',
+        footer_col1:'Направления', footer_onco:'Онкология', footer_cardio:'Кардиология', footer_dent:'Стоматология', footer_plastic:'Пластическая хирургия', footer_checkup:'Чек-ап программы',
+        footer_col2:'Пациентам', footer_how:'Как это работает', footer_search:'Поиск клиники', footer_insurance:'Страхование', footer_faq:'FAQ', footer_blog:'Медицинский блог',
+        footer_col3:'Контакты', footer_addr:'123456, Москва, Пресненская наб., 12, офис 45',
+        footer_copy:'© 2026 Smart K-Medi Solutions. Все права защищены.',
+        footer_privacy:'Политика конфиденциальности', footer_terms:'Пользовательское соглашение',
+        fab_phone:'Срочно: +82-XXX-XXXX',
+    },
+    en: {
+        lang_title:'Select language',
+        nav_destinations:'Destinations', nav_catalog:'Clinic Catalog',
+        nav_service:'Service', nav_about:'About Us', nav_account:'Personal account',
+        hero_badge:'360° Medical Support',
+        hero_h1:'Everything you need<br>for treatment in Korea —<br><span class="text-sky-500 underline decoration-blue-200 decoration-8 underline-offset-4">in one place</span>',
+        hero_desc:'From initial consultation and clinic selection to flights, accommodation and post-operative care. We take care of everything.',
+        tab_medical:'Medical', tab_logistics:'Logistics', tab_legal:'Legal', tab_support:'Support',
+        process_label:'How it works', process_title:'How we work',
+        step1_num:'Step 01', step1_title:'AI clinic matching',
+        step2_num:'Step 02', step2_title:'Consultation & plan',
+        step3_num:'Step 03', step3_title:'Visa, flights, hotel',
+        step4_num:'Step 04', step4_title:'Treatment in Korea',
+        step5_num:'Step 05', step5_title:'Support at home',
+        medical_label:'Medical', medical_title:'Medical Services',
+        medical_desc:'We select only JCI-accredited clinics with direct contracts',
+        med1_title:'Dentistry', med1_text:'Implants, veneers, orthodontics. Korean clinics offer European-quality at half the price.', med1_price:'from $800',
+        med2_title:'Plastic Surgery', med2_text:'Rhinoplasty, blepharoplasty, contouring. Korea is the world leader in aesthetic medicine.', med2_price:'from $2,500',
+        med3_title:'Full Diagnostics', med3_text:'Complete check-up in 1–2 days: MRI, PET/CT, genetic tests, tumour markers — all in one centre.', med3_price:'from $1,200',
+        med4_title:'Cardiology', med4_text:'Coronary angiography, stenting, open-heart surgery. World-class cardiac surgeons.', med4_price:'from $5,000',
+        med5_title:'Oncology', med5_text:'Proton and radiation therapy, robot-assisted surgery, immunotherapy at leading cancer centres.', med5_price:'from $8,000',
+        med6_title:'IVF & Reproductive', med6_text:'Korea is in the top 5 countries for IVF success. Modern protocols, genetic embryo screening.', med6_price:'from $3,500',
+        logistics_label:'Logistics', logistics_title:'Logistics & Service',
+        logistics_desc:'We organise the entire journey — from visa to airport transfer',
+        log1_title:'Visa Support', log1_text:'Document preparation, Korean medical visa processing, consulate assistance. 99.8% success rate.', log1_tag1:'E-6 visa', log1_tag2:'Express processing',
+        log2_title:'Flights & Hotel', log2_text:'We find optimal flights and accommodation near your clinic. VIP transfer from Incheon airport.', log2_tag1:'Business class', log2_tag2:'5★ hotels',
+        log3_title:'Interpreter-Coordinator', log3_text:'Medical interpreter with you at every appointment. Translation of documents, discharge summaries, prescriptions.', log3_tag1:'RU / EN / KO', log3_tag2:'Medical terminology',
+        log4_title:'Recovery Tour', log4_text:'Rehabilitation in Korea combined with a cultural programme: Seoul, Jeju, thermal resorts.', log4_tag1:'Wellness programmes', log4_tag2:'Excursions',
+        legal_label:'Legal', legal_title:'Legal Services',
+        legal_desc:'Full legal protection at every stage of treatment abroad',
+        leg1_title:'Official Contract', leg1_text:'Direct contract with the clinic in Korean and Russian. Fixed price, no extra charges.',
+        leg2_title:'Risk Insurance', leg2_text:'Medical insurance for treatment abroad, complication coverage and emergency repatriation.',
+        leg3_title:'Interest Protection', leg3_text:'International medical lawyer available 24/7. We resolve disputes with clinics and insurers.',
+        support_label:'Support', support_title:'24/7 Support',
+        support_desc:'A personal coordinator is available any time — before, during and after treatment.',
+        sup1_title:'Before the trip', sup1_text:'Consultation, clinic selection, answering all questions, preparing medical documents.',
+        sup2_title:'During treatment', sup2_text:'Interpreter at appointments, clinic escort, help with everyday matters in Korea.',
+        sup3_title:'After returning', sup3_text:'Remote consultations with Korean doctors, rehabilitation monitoring, translation of recommendations.',
+        support_badge:'Personal Coordinator',
+        ch_whatsapp:'WhatsApp / Telegram', ch_whatsapp_sub:'Response within 15 minutes',
+        ch_phone:'Phone call', ch_phone_sub:'Direct coordinator line',
+        ch_ai:'AI chatbot', ch_ai_sub:'Instant answers to questions',
+        packages_label:'Pricing', packages_title:'Service Packages',
+        packages_desc:'Choose the level of support that suits your needs',
+        pkg1_label:'Basic', pkg1_sub:'Commission from clinic', pkg1_f1:'AI clinic matching', pkg1_f2:'Online consultation', pkg1_f3:'Document assistance', pkg1_f4:'Escort in Korea', pkg1_f5:'Interpreter at appointments',
+        pkg2_badge:'Popular', pkg2_sub:'One-time per trip', pkg2_f1:'Everything in Basic', pkg2_f2:'Interpreter 3 days', pkg2_f3:'Airport transfer', pkg2_f4:'Hotel assistance', pkg2_f5:'Legal support',
+        pkg3_sub:'Full support', pkg3_f1:'Everything in Standard', pkg3_f2:'Interpreter full stay', pkg3_f3:'Legal support', pkg3_f4:'Risk insurance', pkg3_f5:'30-day post-treatment support',
+        pkg_btn:'Start for free', pkg_btn2:'Choose Standard', pkg_btn3:'Choose VIP',
+        cta_title:"Don't know where to start?",
+        cta_desc:'Take a 3-minute AI quiz — and we will find the right services and clinic for your specific case.',
+        cta_btn:'Start AI Selection',
+        footer_desc:'We use artificial intelligence to make high-tech medicine accessible to everyone.',
+        footer_col1:'Destinations', footer_onco:'Oncology', footer_cardio:'Cardiology', footer_dent:'Dentistry', footer_plastic:'Plastic Surgery', footer_checkup:'Check-up Programs',
+        footer_col2:'For Patients', footer_how:'How it works', footer_search:'Clinic Search', footer_insurance:'Insurance', footer_faq:'FAQ', footer_blog:'Medical Blog',
+        footer_col3:'Contacts', footer_addr:'123456, Moscow, Presnenskaya emb., 12, office 45',
+        footer_copy:'© 2026 Smart K-Medi Solutions. All rights reserved.',
+        footer_privacy:'Privacy Policy', footer_terms:'User Agreement',
+        fab_phone:'Urgent: +82-XXX-XXXX',
+    },
+    ko: {
+        lang_title:'언어 선택',
+        nav_destinations:'목적지', nav_catalog:'클리닉 목록',
+        nav_service:'서비스', nav_about:'회사 소개', nav_account:'개인 계정',
+        hero_badge:'360° 의료 지원',
+        hero_h1:'한국 치료에 필요한<br>모든 것 —<br><span class="text-sky-500 underline decoration-blue-200 decoration-8 underline-offset-4">한 곳에서</span>',
+        hero_desc:'초기 상담과 클리닉 선택부터 항공, 숙박, 수술 후 관리까지. 저희가 모든 것을 책임집니다.',
+        tab_medical:'의료', tab_logistics:'물류', tab_legal:'법률', tab_support:'지원',
+        process_label:'이용 방법', process_title:'저희의 업무 방식',
+        step1_num:'1단계', step1_title:'AI 클리닉 매칭',
+        step2_num:'2단계', step2_title:'상담 & 계획',
+        step3_num:'3단계', step3_title:'비자, 항공, 호텔',
+        step4_num:'4단계', step4_title:'한국에서 치료',
+        step5_num:'5단계', step5_title:'귀국 후 지원',
+        medical_label:'의료', medical_title:'의료 서비스',
+        medical_desc:'JCI 인증 및 직접 계약 클리닉만 선정합니다',
+        med1_title:'치과', med1_text:'임플란트, 베니어, 교정. 한국 클리닉은 유럽 수준의 품질을 절반 가격에 제공합니다.', med1_price:'$800부터',
+        med2_title:'성형외과', med2_text:'코 성형, 눈꺼풀 성형, 윤곽 성형. 한국은 미용 의학의 세계 선두주자입니다.', med2_price:'$2,500부터',
+        med3_title:'종합 건강검진', med3_text:'1~2일 내 완전한 검진: MRI, PET/CT, 유전자 검사, 종양 표지자 — 한 센터에서 모두.', med3_price:'$1,200부터',
+        med4_title:'심장내과', med4_text:'관상동맥 조영술, 스텐트 시술, 개심 수술. 세계적 수준의 심장외과 전문의.', med4_price:'$5,000부터',
+        med5_title:'종양내과', med5_text:'양성자 및 방사선 치료, 로봇 수술, 주요 암센터의 면역 치료.', med5_price:'$8,000부터',
+        med6_title:'IVF & 생식', med6_text:'한국은 IVF 성공률 세계 5위권. 최신 프로토콜, 배아 유전자 스크리닝.', med6_price:'$3,500부터',
+        logistics_label:'물류', logistics_title:'물류 & 서비스',
+        logistics_desc:'비자부터 공항 픽업까지 전체 여정을 조직합니다',
+        log1_title:'비자 지원', log1_text:'서류 준비, 한국 의료 비자 발급, 영사관 동행. 성공률 99.8%.', log1_tag1:'E-6 비자', log1_tag2:'긴급 처리',
+        log2_title:'항공 & 호텔', log2_text:'클리닉 인근 최적의 항공편과 숙소를 찾아드립니다. 인천공항 VIP 픽업.', log2_tag1:'비즈니스 클래스', log2_tag2:'5★ 호텔',
+        log3_title:'통역 코디네이터', log3_text:'모든 진료에 의료 통역사가 동행합니다. 서류, 퇴원요약, 처방전, 검사 결과 번역.', log3_tag1:'RU / EN / KO', log3_tag2:'의료 전문 용어',
+        log4_title:'회복 투어', log4_text:'한국에서의 재활을 문화 프로그램과 결합: 서울, 제주도, 온천 리조트.', log4_tag1:'웰니스 프로그램', log4_tag2:'관광',
+        legal_label:'법률', legal_title:'법률 서비스',
+        legal_desc:'해외 치료의 모든 단계에서 완전한 법적 보호',
+        leg1_title:'공식 계약', leg1_text:'한국어와 러시아어로 된 클리닉과의 직접 계약. 고정 가격, 추가 요금 없음.',
+        leg2_title:'위험 보험', leg2_text:'해외 치료를 위한 의료 보험, 합병증 보장 및 긴급 송환.',
+        leg3_title:'권익 보호', leg3_text:'국제 의료 변호사 24/7 대기. 클리닉 및 보험사와의 분쟁 해결.',
+        support_label:'지원', support_title:'24/7 지원',
+        support_desc:'개인 코디네이터가 치료 전, 중, 후 언제든지 도와드립니다.',
+        sup1_title:'여행 전', sup1_text:'상담, 클리닉 선택, 모든 질문 답변, 의료 서류 준비.',
+        sup2_title:'치료 중', sup2_text:'진료 시 통역, 클리닉 동행, 한국에서의 일상적인 문제 지원.',
+        sup3_title:'귀국 후', sup3_text:'한국 의사와의 원격 상담, 재활 모니터링, 권고사항 번역.',
+        support_badge:'개인 코디네이터',
+        ch_whatsapp:'WhatsApp / Telegram', ch_whatsapp_sub:'15분 이내 응답',
+        ch_phone:'전화 통화', ch_phone_sub:'코디네이터 직통 전화',
+        ch_ai:'AI 챗봇', ch_ai_sub:'즉각적인 질문 답변',
+        packages_label:'가격', packages_title:'서비스 패키지',
+        packages_desc:'필요에 맞는 지원 수준을 선택하세요',
+        pkg1_label:'Basic', pkg1_sub:'클리닉 커미션', pkg1_f1:'AI 클리닉 매칭', pkg1_f2:'온라인 상담', pkg1_f3:'서류 지원', pkg1_f4:'한국 동행', pkg1_f5:'진료 통역',
+        pkg2_badge:'인기', pkg2_sub:'여행당 1회', pkg2_f1:'Basic 포함', pkg2_f2:'통역 3일', pkg2_f3:'공항 픽업', pkg2_f4:'호텔 지원', pkg2_f5:'법률 지원',
+        pkg3_sub:'완전 지원', pkg3_f1:'Standard 포함', pkg3_f2:'전 기간 통역', pkg3_f3:'법률 지원', pkg3_f4:'위험 보험', pkg3_f5:'치료 후 30일 지원',
+        pkg_btn:'무료로 시작', pkg_btn2:'Standard 선택', pkg_btn3:'VIP 선택',
+        cta_title:'어디서 시작해야 할지 모르시나요?',
+        cta_desc:'3분 AI 설문을 완료하면 귀하의 케이스에 맞는 서비스와 클리닉을 찾아드립니다.',
+        cta_btn:'AI 선택 시작',
+        footer_desc:'저희는 AI를 활용해 첨단 의료를 모든 사람에게 접근 가능하게 만듭니다.',
+        footer_col1:'목적지', footer_onco:'종양내과', footer_cardio:'심장내과', footer_dent:'치과', footer_plastic:'성형외과', footer_checkup:'건강검진 프로그램',
+        footer_col2:'환자를 위해', footer_how:'이용 방법', footer_search:'클리닉 검색', footer_insurance:'보험', footer_faq:'FAQ', footer_blog:'의료 블로그',
+        footer_col3:'연락처', footer_addr:'123456, 모스크바, 프레스넨스카야 둑, 12, 사무실 45',
+        footer_copy:'© 2026 Smart K-Medi Solutions. 모든 권리 보유.',
+        footer_privacy:'개인정보 처리방침', footer_terms:'이용약관',
+        fab_phone:'긴급: +82-XXX-XXXX',
+    }
+};
+
+/* ══════════════════════════════════════
+   APPLY TRANSLATIONS
+══════════════════════════════════════ */
+function applyLang(lang) {
+    const t = T[lang];
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (t[key] !== undefined) el.innerHTML = t[key];
+    });
+}
+
+/* ══════════════════════════════════════
+   LANG DROPDOWN
+══════════════════════════════════════ */
+let langOpen = false;
+function toggleLang(e) { e.stopPropagation(); langOpen ? closeLang() : openLang(); }
+function openLang() {
+    langOpen = true;
+    document.getElementById('lang-dropdown').classList.add('open');
+    document.getElementById('lang-chevron').classList.add('rotated');
+}
+function closeLang() {
+    langOpen = false;
+    document.getElementById('lang-dropdown').classList.remove('open');
+    document.getElementById('lang-chevron').classList.remove('rotated');
+}
+function selectLang(code, flag, label, el) {
+    document.getElementById('lang-flag').textContent    = flag;
+    document.getElementById('lang-current').textContent = label;
+    document.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
+    el.classList.add('active');
+    localStorage.setItem('kmedi_lang', code); // ✅ только при ручном выборе
+    applyLang(code);
+    setTimeout(closeLang, 150);
+}
+document.addEventListener('click', e => {
+    if (!document.getElementById('lang-switcher').contains(e.target)) closeLang();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLang(); });
+
+/* ══════════════════════════════════════
+   SCROLL TO SECTION
+══════════════════════════════════════ */
+function scrollToSection(id) {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ══════════════════════════════════════
+   SCROLL REVEAL
+══════════════════════════════════════ */
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+/* ══════════════════════════════════════
+   PAGE TRANSITIONS
+══════════════════════════════════════ */
+    /* === PAGE TRANSITIONS — только #page-content === */
+    function initTransitions() {
+        document.addEventListener('click', e => {
+            // Ссылки
+            const link = e.target.closest('a');
+            if (link && link.hostname === window.location.hostname && !link.hash && link.target !== '_blank') {
+                e.preventDefault();
+                document.getElementById('page-content').classList.add('fade-out');
+                setTimeout(() => { window.location.href = link.href; }, 500);
+                return;
+            }
+            // Кнопки «Назад» — добавь data-back на любую кнопку
+            const backBtn = e.target.closest('[data-back]');
+            if (backBtn) {
+                e.preventDefault();
+                document.getElementById('page-content').classList.add('fade-out');
+                setTimeout(() => { history.back(); }, 500);
+            }
+        });
+    }
+
+    // Возврат через кнопку браузера «Назад» — перезапускаем fade-in
+    window.addEventListener('pageshow', e => {
+        if (e.persisted) {
+            const pc = document.getElementById('page-content');
+            pc.classList.remove('fade-out');
+            void pc.offsetWidth; // force reflow → перезапускает CSS animation
+        }
+    });
+
+    initTransitions();
+
+    document.getElementById('ai-chatbot-btn').addEventListener('click', () => {
+        alert('AI Chatbot coming soon!');
+    });
+
+    
+/* ══════════════════════════════════════
+   INIT — localStorage, НЕ перезаписываем
+══════════════════════════════════════ */
+(function init() {
+    const saved       = localStorage.getItem('kmedi_lang');
+    const browserLang = (navigator.language || 'ru').slice(0, 2).toLowerCase();
+    const supported   = ['en', 'ru', 'ko'];
+    const lang        = (saved && supported.includes(saved)) ? saved
+                      : (supported.includes(browserLang) ? browserLang : 'ru');
+    const langMap     = { ru: ['🇷🇺','RU'], en: ['🇬🇧','EN'], ko: ['🇰🇷','한국어'] };
+
+    document.getElementById('lang-flag').textContent    = langMap[lang][0];
+    document.getElementById('lang-current').textContent = langMap[lang][1];
+    document.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
+    const active = document.getElementById('opt-' + lang);
+    if (active) active.classList.add('active');
+    applyLang(lang);
+})();
+</script>
+</body>
+</html>

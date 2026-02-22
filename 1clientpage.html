@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Dashboard | AI MedTour</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .hero-gradient { background: radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.05) 0%, rgba(255,255,255,0) 50%); }
+        .step-completed { background: #0c4a6e; color: white; }
+        .step-current { border: 2px solid #0c4a6e; color: #0c4a6e; position: relative; background: #fff; }
+        .step-current::after { content: ''; position: absolute; inset: -4px; border: 1px solid #0c4a6e; border-radius: 100%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.5); } }
+
+        .fade { opacity: 0; animation: fadeIn 0.5s ease-in-out forwards !important; }
+        .fade-out { animation: fadeOut 0.5s ease-in-out forwards !important; }
+        @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+    </style>
+</head>
+<body class="bg-sky-100 text-slate-900 hero-gradient flex flex-col min-h-screen fade">
+
+    <aside class="w-64 bg-sky-900 min-h-screen p-6 text-white hidden lg:block fixed">
+        <a href="1homepage.html"><div class="text-2xl font-black text-sky-400 mb-12 italic">Smart <span class="text-white">K-Medi</span></div>
+        <nav class="space-y-4">
+            <a href="#" class="flex items-center gap-3 p-3 bg-sky-900 rounded-xl font-bold"><span>📊</span> Dashboard</a>
+            <a href="#" class="flex items-center gap-3 p-3 hover:bg-slate-800 rounded-xl text-slate-400 transition"><span>📂</span> Documents</a>
+            <a href="#" class="flex items-center gap-3 p-3 hover:bg-slate-800 rounded-xl text-slate-400 transition"><span>💬</span> Messages</a>
+            <a href="#" class="flex items-center gap-3 p-3 hover:bg-slate-800 rounded-xl text-slate-400 transition"><span>⚙️</span> Settings</a>
+        </nav>
+    </aside>
+
+    <main class="flex-1 lg:ml-64 p-8">
+        
+        <header class="flex justify-between items-center mb-10">
+            <div>
+                <h1 class="text-2xl font-extrabold text-slate-900">Welcome, Alexander</h1>
+                <p class="text-slate-500 text-sm italic">Your medical journey is in preparation</p>
+            </div>
+            <div class="flex gap-4">
+                <button class="p-2 bg-white border border-slate-200 rounded-xl"><img src="images/bell.png" alt="Notifications" class="w-5 h-5"></button>
+                <img src="images/user.png" alt="User Avatar" class="w-10 h-10 rounded-xl bg-sky-900 p-1">
+            </div>
+        </header>
+
+        <section class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 mb-8">
+            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-8">Your Request Status</h3>
+            <div class="relative flex justify-between">
+                <div class="absolute top-5 left-0 w-full h-0.5 bg-slate-100 -z-0"></div>
+                <div class="absolute top-5 left-0 w-1/2 h-0.5 bg-blue-600 -z-0"></div>
+
+                <div class="relative z-10 flex flex-col items-center gap-3">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm step-completed">✓</div>
+                    <span class="text-[10px] font-bold uppercase text-slate-400">Survey</span>
+                </div>
+                <div class="relative z-10 flex flex-col items-center gap-3">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm step-completed">✓</div>
+                    <span class="text-[10px] font-bold uppercase text-slate-400">Consultation</span>
+                </div>
+                <div class="relative z-10 flex flex-col items-center gap-3">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm step-current bg-white">3</div>
+                    <span class="text-[10px] font-bold uppercase text-sky-400 tracking-tighter">Appointment Confirmed</span>
+                </div>
+                <div class="relative z-10 flex flex-col items-center gap-3 opacity-30">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm bg-slate-100 text-slate-400">4</div>
+                    <span class="text-[10px] font-bold uppercase text-slate-400">Visit</span>
+                </div>
+                <div class="relative z-10 flex flex-col items-center gap-3 opacity-30">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm bg-slate-100 text-slate-400">5</div>
+                    <span class="text-[10px] font-bold uppercase text-slate-400">Support</span>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-2 space-y-8">
+                
+                <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-bold italic">Your Medical Case</h3>
+                        <button class="text-sky-400 text-xs font-bold uppercase">+ Add File</button>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                            <div class="flex items-center gap-4">
+                                <span class="text-xl">📄</span>
+                                <div>
+                                    <div class="text-sm font-bold">Medical Questionnaire (AI Analysis)</div>
+                                    <div class="text-[10px] text-slate-400">PDF • 2.4 MB • 02/12/2026</div>
+                                </div>
+                            </div>
+                            <button class="text-slate-400 hover:text-sky-400">📥</button>
+                        </div>
+                        <div class="flex items-center justify-between p-4 bg-blue-50/50 rounded-2xl border border-blue-100">
+                            <div class="flex items-center gap-4">
+                                <span class="text-xl">✉️</span>
+                                <div>
+                                    <div class="text-sm font-bold text-sky-400">Invitation from JK Clinic</div>
+                                    <div class="text-[10px] text-sky-400 font-bold uppercase">For Visa Support</div>
+                                </div>
+                            </div>
+                            <button class="text-sky-400">📥</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+                    <h3 class="font-bold italic mb-6">AI Matching History</h3>
+                    <div class="flex gap-4 overflow-x-auto pb-4">
+                        <div class="min-w-[200px] p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                            <div class="text-[10px] font-bold text-sky-400 uppercase mb-2">98% Match</div>
+                            <div class="text-sm font-bold mb-1">JK Surgery</div>
+                            <div class="text-xs text-slate-400">Seoul, Korea</div>
+                        </div>
+                        <div class="min-w-[200px] p-4 bg-slate-50 rounded-2xl border border-slate-100 opacity-50">
+                            <div class="text-[10px] font-bold text-slate-400 uppercase mb-2">89% Match</div>
+                            <div class="text-sm font-bold mb-1">Memorial Şişli</div>
+                            <div class="text-xs text-slate-400">Istanbul, Turkey</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-8">
+                
+                <div class="bg-sky-900 text-white p-8 rounded-[2.5rem] shadow-xl shadow-blue-900/10">
+                    <div class="flex items-center gap-4 mb-6">
+                        <img src="images/user.png" alt="User Avatar" class="w-12 h-12 rounded-xl p-1">
+                        <div>
+                            <div class="font-bold text-sm">Your Coordinator</div>
+                            <div class="text-[10px] text-green-400 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 bg-green-400 rounded-full"></span> Online
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white/5 rounded-2xl p-4 mb-6 text-xs text-slate-300 italic">
+                        "Hello! Your visa invitation has been uploaded to the documents section. Do you have any questions about the flight?"
+                    </div>
+                    <button class="w-full py-4 bg-sky-600 rounded-xl font-bold hover:bg-sky-500 transition shadow-lg shadow-sky-600/20">Open Chat</button>
+                </div>
+
+                <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+                    <h3 class="font-bold italic mb-6">Trip Checklist</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-center gap-3 text-sm text-slate-600">
+                            <input type="checkbox" checked class="w-4 h-4 rounded border-slate-300 text-sky-400 focus:ring-blue-500">
+                            <span class="line-through opacity-50">Upload test results</span>
+                        </li>
+                        <li class="flex items-center gap-3 text-sm text-slate-600">
+                            <input type="checkbox" checked class="w-4 h-4 rounded border-slate-300 text-sky-400 focus:ring-blue-500">
+                            <span class="line-through opacity-50">Get estimate</span>
+                        </li>
+                        <li class="flex items-center gap-3 text-sm text-slate-900 font-bold">
+                            <input type="checkbox" class="w-4 h-4 rounded border-slate-300 text-sky-400 focus:ring-blue-500">
+                            Apply for K-ETA / Visa
+                        </li>
+                        <li class="flex items-center gap-3 text-sm text-slate-600">
+                            <input type="checkbox" class="w-4 h-4 rounded border-slate-300 text-sky-400 focus:ring-blue-500">
+                            Purchase flight tickets
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="bg-sky-900 text-slate-300 pt-20 pb-10 border-t border-sky-800 mt-24 lg:ml-64">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+            <div class="space-y-6">
+                <div class="text-3xl font-extrabold text-white">Smart <span class="text-sky-400">K-Medi</span></div>
+                <p class="text-sm leading-relaxed text-slate-400">
+                    We use artificial intelligence to make high-tech medicine accessible to everyone. Clinic selection, logistics, and 24/7 care for your health.
+                </p>
+                <div class="flex gap-4">
+                    <a href="#" class="w-10 h-10 rounded-full bg-sky-800 flex items-center justify-center hover:bg-sky-700 transition text-white">FB</a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-sky-800 flex items-center justify-center hover:bg-sky-700 transition text-white">IG</a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-sky-800 flex items-center justify-center hover:bg-sky-700 transition text-white">TG</a>
+                </div>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm">Specialties</h4>
+                <ul class="space-y-4 text-sm">
+                    <li><a href="#" class="hover:text-sky-400 transition">Oncology</a></li>
+                    <li><a href="#" class="hover:text-sky-400 transition">Cardiology</a></li>
+                    <li><a href="#" class="hover:text-sky-400 transition">Dentistry</a></li>
+                    <li><a href="#" class="hover:text-sky-400 transition">Plastic Surgery</a></li>
+                    <li><a href="#" class="hover:text-sky-400 transition">Check-up Programs</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm">For Patients</h4>
+                <ul class="space-y-4 text-sm">
+                    <li><a href="#" class="hover:text-sky-400 transition">How it Works</a></li>
+                    <li><a href="#" class="hover:text-sky-400 transition">Clinic Search</a></li>
+                    <li><a href="#" class="hover:text-sky-400 transition">Insurance</a></li>
+                    <li><a href="#" class="hover:text-sky-400 transition">FAQ</a></li>
+                    <li><a href="#" class="hover:text-sky-400 transition">Medical Blog</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm">Contacts</h4>
+                <div class="space-y-4 text-sm">
+                    <p class="flex items-start gap-3 text-slate-400">
+                        <span class="text-sky-400">📍</span> 123456, Moscow, Presnenskaya Emb., 12, Office 45
+                    </p>
+                    <p class="flex items-center gap-3 font-bold text-white">
+                        <span class="text-sky-400">📞</span> 8 (800) 555-35-35
+                    </p>
+                    <p class="flex items-center gap-3 text-slate-400 italic">
+                        <span class="text-sky-400">✉️</span> support@smart-k-medi.com
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-6 pt-8 border-t border-sky-800 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
+            <p>© 2026 Smart K-Medi Solutions. All rights reserved.</p>
+            <div class="flex gap-6">
+                <a href="#" class="hover:text-white transition">Privacy Policy</a>
+                <a href="#" class="hover:text-white transition">User Agreement</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- AI Chatbot Floating Button -->
+    <button id="ai-chatbot-btn" aria-label="Open AI Chatbot" class="fixed bottom-6 right-6 z-50 text-white rounded-full flex items-center justify-center w-16 h-16 transition-all focus:outline-none focus:ring-2 focus:ring-sky-400/80 shadow-2xl shadow-sky-900/40 backdrop-blur-md bg-sky-900/50 border border-white/60 hover:bg-white/20 hover:border-white/40 hover:shadow-sky-500/30">
+        <img src="images/ai.png" alt="AI Chatbot" class="w-8 h-8">
+    </button>
+        <!-- Плавающая кнопка РЯДОМ с AI чатботом -->
+    <a href="tel:+82XXXXXXXXX" class="fixed bottom-6 left-6 z-50 text-white rounded-full px-6 py-4 font-bold text-sm flex items-center gap-3 transition-all backdrop-blur-md bg-green-500/30 border border-green-400/30 shadow-2xl shadow-green-900/30 hover:bg-green-400/30 hover:border-green-400/50 hover:shadow-green-500/40">
+        <img src="images/phone.png" alt="Phone Icon" class="w-5 h-5">
+        Urgent: +82-XXX-XXXX
+    </a>
+
+    <script>
+        /* ── Page transitions ── */
+function initTransitions() {
+    document.addEventListener('click', (e) => {
+        const link = e.target.closest('a');
+        if (link && link.hostname === window.location.hostname && !link.hash && link.target !== '_blank') {
+            e.preventDefault();
+            document.body.classList.add('fade-out');
+            setTimeout(() => { window.location.href = link.href; }, 500);
+        }
+    });
+}
+window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+        document.body.classList.remove('fade-out','fade');
+        void document.body.offsetWidth;
+        document.body.classList.add('fade');
+    }
+});
+initTransitions();
+
+
+        // Open AI chatbot modal
+        document.getElementById('ai-chatbot-btn').addEventListener('click', function() {
+            alert('AI Chatbot coming soon!');
+        });
+    </script>
+
+</body>
+</html>

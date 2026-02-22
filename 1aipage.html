@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Matching | Intelligent Clinic Selection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/aipage.css">
+</head>
+<body class="fade">
+
+
+<div class="topbar">
+    <span>Smart K-Medi</span>
+    <div style="display:flex; gap:8px; align-items:center;">
+        <button class="lang-btn" data-lang="ru" onclick="selectLang('ru','🇷🇺','RU',this)">RU</button>
+        <button class="lang-btn" data-lang="en" onclick="selectLang('en','🇬🇧','EN',this)">EN</button>
+        <button class="lang-btn" data-lang="ko" onclick="selectLang('ko','🇰🇷','한국어',this)">KR</button>
+    </div>
+</div>
+
+
+<main>
+    <div class="blob blob-tr"></div>
+    <div class="blob blob-bl"></div>
+
+    <!-- ════════════════════════════════
+         QUIZ SECTION
+    ════════════════════════════════ -->
+    <div class="quiz-wrapper" id="quiz-section">
+
+        <!-- Progress bar -->
+        <div class="progress-container">
+            <div class="progress-meta">
+                <span class="progress-step-label" id="step-label">Step 1 of 5</span>
+                <span class="progress-pct" id="bar-pct-label">20%</span>
+            </div>
+            <div class="bar-track">
+                <div class="bar-fill" id="bar-fill" style="width:20%"></div>
+            </div>
+        </div>
+
+        <!-- Card -->
+        <div class="card">
+            <div class="card-grid">
+
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <div>
+                        <img src="images/ai.png" alt="AI Coordinator" class="sidebar-icon">
+                        <h3 id="sidebar-title">Your AI Coordinator</h3>
+                        <p id="sidebar-desc">"I analyze your responses in real-time to find the best clinics and save you up to 40 hours of searching."</p>
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="content">
+
+                    <!-- Q1: Specialty -->
+                    <div class="question-screen active" id="q1">
+                        <div>
+                            <div class="step-label">Question 1 of 5</div>
+                            <h2 class="step-title">Which medical field<br>are you interested in?</h2>
+                            <div class="options-grid">
+                                <button class="option-btn" onclick="selectOption(this,'q1')">
+                                    <img src="images/dentist.png" alt="Dentistry" class="opt-icon">
+                                    <span class="opt-label">Dentistry</span>
+                                </button>
+                                <button class="option-btn" onclick="selectOption(this,'q1')">
+                                    <img src="images/plastic-surgery.png" alt="Plastic Surgery" class="opt-icon">
+                                    <span class="opt-label">Plastic Surgery</span>
+                                </button>
+                                <button class="option-btn" onclick="selectOption(this,'q1')">
+                                    <img src="images/diagnosis.png" alt="Diagnostics" class="opt-icon">
+                                    <span class="opt-label">Diagnostics</span>
+                                </button>
+                                <div class="other-wrapper" id="other-wrapper">
+                                    <button class="option-btn" id="other-btn" onclick="toggleDropdown(event)">
+                                        <img src="images/more.png" alt="Other" class="opt-icon" id ="other-icon">
+                                        <span class="opt-label other-arrow" id="other-arrow">
+                                            <span id="other-label">Other</span>
+                                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="nav-row">
+                            <button data-back class="btn-back">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                Back
+                            </button>
+                            <button class="btn-continue" id="q1-next" disabled onclick="goNext(1)">
+                                Continue
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Q2: Budget -->
+                    <div class="question-screen" id="q2">
+                        <div>
+                            <div class="step-label">Question 2 of 5</div>
+                            <h2 class="step-title">What is your<br>approximate budget?</h2>
+                            <div class="range-wrap">
+                                <div class="range-value" id="budget-display">$3,000</div>
+                                <input type="range" id="budget-range" min="500" max="20000" step="500" value="3000"
+                                    oninput="updateBudget(this.value)" onchange="answers.budget=this.value; enableNext('q2-next')">
+                                <div class="range-labels">
+                                    <span>$500</span>
+                                    <span>$20,000+</span>
+                                </div>
+                            </div>
+                            <div class="options-grid cols-3" style="margin-top:8px">
+                                <button class="option-btn" onclick="setBudget(2000, this)">
+                                    <span class="opt-label">Economy</span>
+                                    <span class="opt-sub">Up to $2K</span>
+                                </button>
+                                <button class="option-btn" onclick="setBudget(5000, this)">
+                                    <span class="opt-label">Standard</span>
+                                    <span class="opt-sub">$3K–$7K</span>
+                                </button>
+                                <button class="option-btn" onclick="setBudget(12000, this)">
+                                    <span class="opt-label">Premium</span>
+                                    <span class="opt-sub">$10K+</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="nav-row">
+                            <button class="btn-back" onclick="goBack()">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                Back
+                            </button>
+                            <button class="btn-continue" id="q2-next" onclick="goNext(2)">
+                                Continue
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Q3: Location -->
+                    <div class="question-screen" id="q3">
+                        <div>
+                            <div class="step-label">Question 3 of 5</div>
+                            <h2 class="step-title">Preferred clinic<br>location in Korea?</h2>
+                            <div class="options-grid">
+                                <button class="option-btn" onclick="selectOption(this,'q3')">
+                                    <img src="images/seoul-tower.png" alt="Seoul" class="opt-icon">
+                                    <span class="opt-label">Seoul</span>
+                                    <span class="opt-sub">Most options</span>
+                                </button>
+                                <button class="option-btn" onclick="selectOption(this,'q3')">
+                                    <img src="images/busan.png" alt="Busan" class="opt-icon">
+                                    <span class="opt-label">Busan</span>
+                                    <span class="opt-sub">Coastal city</span>
+                                </button>
+                                <button class="option-btn" onclick="selectOption(this,'q3')">
+                                    <img src="images/south-korea.png" alt="South Korea" class="opt-icon">
+                                    <span class="opt-label">Any city</span>
+                                    <span class="opt-sub">Flexible</span>
+                                </button>
+                                <button class="option-btn" onclick="selectOption(this,'q3')">
+                                    <img src="images/airport.png" alt="Near Airport" class="opt-icon">
+                                    <span class="opt-label">Near airport</span>
+                                    <span class="opt-sub">Easy travel</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="nav-row">
+                            <button class="btn-back" onclick="goBack()">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                Back
+                            </button>
+                            <button class="btn-continue" id="q3-next" disabled onclick="goNext(3)">
+                                Continue
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Q4: Priority -->
+                    <div class="question-screen" id="q4">
+                        <div>
+                            <div class="step-label">Question 4 of 5</div>
+                            <h2 class="step-title">What matters most<br>to you when choosing?</h2>
+                            <div class="options-grid">
+                                <button class="option-btn" onclick="selectOption(this,'q4')">
+                                    <img src="images/reputation.png" alt="Reputation" class="opt-icon">
+                                    <span class="opt-label">Reputation</span>
+                                    <span class="opt-sub">Awards & reviews</span>
+                                </button>
+                                <button class="option-btn" onclick="selectOption(this,'q4')">
+                                    <img src="images/best-price.png" alt="Best price" class="opt-icon">
+                                    <span class="opt-label">Best price</span>
+                                    <span class="opt-sub">Value for money</span>
+                                </button>
+                                <button class="option-btn" onclick="selectOption(this,'q4')">
+                                    <img src="images/russian.png" alt="English support" class="opt-icon">
+                                    <span class="opt-label">English support</span>
+                                    <span class="opt-sub">Full communication</span>
+                                </button>
+                                <button class="option-btn" onclick="selectOption(this,'q4')">
+                                    <img src="images/clock.png" alt="Fast booking" class="opt-icon">
+                                    <span class="opt-label">Fast booking</span>
+                                    <span class="opt-sub">Within 2 weeks</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="nav-row">
+                            <button class="btn-back" onclick="goBack()">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                Back
+                            </button>
+                            <button class="btn-continue" id="q4-next" disabled onclick="goNext(4)">
+                                Continue
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Q5: Timing -->
+                    <div class="question-screen" id="q5">
+                        <div>
+                            <div class="step-label">Question 5 of 5</div>
+                            <h2 class="step-title">When are you planning<br>to visit Korea?</h2>
+                            <div class="options-grid">
+                                <button class="option-btn" onclick="selectOption(this,'q5')">
+                                    <img src="images/clock.png" alt="ASAP" class="opt-icon">
+                                    <span class="opt-label">ASAP</span>
+                                    <span class="opt-sub">Within 1 month</span>
+                                </button>
+                                <button class="option-btn" onclick="selectOption(this,'q5')">
+                                    <img src="images/calendar.png" alt="Calendar" class="opt-icon">
+                                    <span class="opt-label">In 1–3 months</span>
+                                    <span class="opt-sub">Planning ahead</span>
+                                </button>
+                                <button class="option-btn" onclick="selectOption(this,'q5')">
+                                    <img src="images/calendar copy.png" alt="Month" class="opt-icon">
+                                    <span class="opt-label">In 3–6 months</span>
+                                    <span class="opt-sub">No rush</span>
+                                </button>
+                                <button class="option-btn" onclick="selectOption(this,'q5')">
+                                    <img src="images/thought.png" alt="Anytime" class="opt-icon">
+                                    <span class="opt-label">Just exploring</span>
+                                    <span class="opt-sub">No set date</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="nav-row">
+                            <button class="btn-back" onclick="goBack()">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                Back
+                            </button>
+                            <a href="1result.html"><button class="btn-continue" id="q5-next" disabled onclick="showResults()">
+                                See My Results
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </button></a>
+                        </div>
+                    </div>
+
+                </div><!-- /content -->
+            </div><!-- /card-grid -->
+        </div><!-- /card -->
+    </div><!-- /quiz-wrapper -->
+
+
+</main>
+
+<!-- Dropdown portal -->
+<div class="dropdown" id="dropdown">
+    <div class="dropdown-header">Choose specialization</div>
+    <div class="dropdown-list">
+        <button class="dropdown-item" onclick="pickOther(this,'IVF / Childbirth')"><span class="di-icon"><img src="images/midwife.png" alt="IVF / Childbirth"></span><span class="di-label">IVF / Childbirth</span><span class="di-check">✓</span></button>
+        <button class="dropdown-item" onclick="pickOther(this,'Orthopedics')"><span class="di-icon"><img src="images/orthopedist.png" alt="Orthopedics"></span><span class="di-label">Orthopedics</span><span class="di-check">✓</span></button>
+        <button class="dropdown-item" onclick="pickOther(this,'Cardiology')"><span class="di-icon"><img src="images/cardiologist.png" alt="Cardiology"></span><span class="di-label">Cardiology</span><span class="di-check">✓</span></button>
+        <button class="dropdown-item" onclick="pickOther(this,'Neurology')"><span class="di-icon"><img src="images/neurologist.png" alt="Neurology"></span><span class="di-label">Neurology</span><span class="di-check">✓</span></button>
+        <button class="dropdown-item" onclick="pickOther(this,'Ophthalmology')"><span class="di-icon"><img src="images/ophthalmologist.png" alt="Ophthalmology"></span><span class="di-label">Ophthalmology</span><span class="di-check">✓</span></button>
+        <button class="dropdown-item" onclick="pickOther(this,'Oncology')"><span class="di-icon"><img src="images/oncologist.png" alt="Oncology"></span><span class="di-label">Oncology</span><span class="di-check">✓</span></button>
+        <button class="dropdown-item" onclick="pickOther(this,'Rehabilitation')"><span class="di-icon"><img src="images/rehabilitation.png" alt="Rehabilitation"></span><span class="di-label">Rehabilitation</span><span class="di-check">✓</span></button>
+    </div>
+</div>
+
+<footer>Data processing according to GDPR &amp; HIPAA Medical Standards</footer>
+
+
+    <script src="static/aipage.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>О нас | Smart K-Medi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+
+        .fade     { opacity: 0; animation: fadeIn 0.5s ease-in-out forwards !important; }
+        .fade-out { animation: fadeOut 0.5s ease-in-out forwards !important; }
+        @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+        /* Hero parallax blob */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+        }
+
+        /* Counter animation */
+        .counter { transition: all 0.3s; }
+
+        /* Timeline line */
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            top: 0; bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, transparent, #bae6fd, #0ea5e9, #bae6fd, transparent);
+            transform: translateX(-50%);
+        }
+
+        /* Team card shine */
+        .team-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 2.5rem;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        /* Lang dropdown */
+        #lang-dropdown {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 10px);
+            width: 224px;
+            background: #fff;
+            border-radius: 20px;
+            border: 1.5px solid #e2e8f0;
+            box-shadow: 0 20px 40px rgba(12,74,110,.15);
+            padding: 8px;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-8px);
+            transition: opacity .22s ease, transform .22s ease;
+        }
+        #lang-dropdown.open { opacity: 1; pointer-events: all; transform: translateY(0); }
+        .lang-option { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px; border-radius: 12px; border: none; background: transparent; cursor: pointer; font-family: inherit; text-align: left; transition: background .15s; }
+        .lang-option:hover { background: #f0f9ff; }
+        .lang-option.active { background: #eff6ff; }
+        .lang-option.active .lang-name { color: #0284c7; font-weight: 700; }
+        .lang-option .lang-check { margin-left: auto; color: #0284c7; font-weight: 900; font-size: 14px; opacity: 0; transition: opacity .15s; }
+        .lang-option.active .lang-check { opacity: 1; }
+        .flag-img { font-size: 22px; flex-shrink: 0; }
+        .lang-name { font-size: 13px; font-weight: 600; color: #334155; }
+        .lang-sub  { font-size: 11px; color: #94a3b8; margin-top: 1px; }
+        #lang-chevron { transition: transform .25s ease; }
+        #lang-chevron.rotated { transform: rotate(180deg); }
+
+        /* Scroll reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(32px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(-3deg); }
+            50%       { transform: translateY(-12px) rotate(-3deg); }
+        }
+        @keyframes floatAlt {
+            0%, 100% { transform: translateY(0px) rotate(3deg) translateY(48px); }
+            50%       { transform: translateY(-10px) rotate(3deg) translateY(48px); }
+        }
+        .float-card  { animation: float 5s ease-in-out infinite; }
+        .float-card2 { animation: floatAlt 6s ease-in-out infinite; }
+
+        @keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .spin-slow { animation: spinSlow 20s linear infinite; }
+
+        @keyframes ping { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2.2); opacity: 0; } }
+        .ping-dot::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: currentColor; animation: ping 1.5s ease-out infinite; }
+    </style>
+</head>
+<body class="bg-sky-50 text-slate-900 min-h-screen fade">
+
+<!-- ══ NAV ══════════════════════════════════════════════ -->
+<nav class="sticky top-0 z-50 bg-white/30 backdrop-blur-lg border border-white/20 shadow px-6 py-4">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+        <a href="1homepage.html">
+            <div class="text-2xl font-black tracking-tighter text-sky-400 italic">Smart <span class="text-sky-900">K-Medi</span></div>
+        </a>
+        <div class="hidden lg:flex space-x-8 text-sm font-bold text-slate-600 uppercase">
+            <a href="#" class="hover:text-sky-900 drop-shadow-[0_0_20px_rgba(56,189,248,0.8)]" data-i18n="nav_destinations">Destinations</a>
+            <a href="catalog.html" class="hover:text-sky-900 drop-shadow-[0_0_20px_rgba(56,189,248,0.8)]" data-i18n="nav_catalog">Clinic Catalog</a>
+            <a href="services.html" class="hover:text-sky-900 drop-shadow-[0_0_20px_rgba(56,189,248,0.8)]" data-i18n="nav_service">Service</a>
+            <a href="aboutus.html" class="hover:text-sky-900 border-b-2 border-sky-400 text-sky-900" data-i18n="nav_about">About Us</a>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="relative" id="lang-switcher">
+                <button onclick="toggleLang(event)" id="lang-trigger"
+                    class="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-full text-sm font-bold cursor-pointer hover:border-sky-400 hover:shadow-[0_0_0_3px_rgba(14,165,233,0.08)] transition-all">
+                    <span id="lang-flag">🇷🇺</span>
+                    <span id="lang-current">RU</span>
+                    <svg id="lang-chevron" class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div id="lang-dropdown">
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-slate-400 px-3 py-2 border-b border-slate-100 mb-1" data-i18n="lang_title">Select language</div>
+                    <button onclick="selectLang('ru','🇷🇺','RU',this)" class="lang-option active" id="opt-ru">
+                        <span class="flag-img">🇷🇺</span>
+                        <div class="flex-1"><div class="lang-name">Русский</div><div class="lang-sub">Russian</div></div>
+                        <span class="lang-check">✓</span>
+                    </button>
+                    <button onclick="selectLang('en','🇬🇧','EN',this)" class="lang-option" id="opt-en">
+                        <span class="flag-img">🇬🇧</span>
+                        <div class="flex-1"><div class="lang-name">English</div><div class="lang-sub">English</div></div>
+                        <span class="lang-check">✓</span>
+                    </button>
+                    <button onclick="selectLang('ko','🇰🇷','한국어',this)" class="lang-option" id="opt-ko">
+                        <span class="flag-img">🇰🇷</span>
+                        <div class="flex-1"><div class="lang-name">한국어</div><div class="lang-sub">Korean</div></div>
+                        <span class="lang-check">✓</span>
+                    </button>
+                </div>
+            </div>
+            <a href="1clientpage.html" class="bg-sky-600 text-white px-6 py-2.5 rounded-full font-bold text-sm shadow-lg shadow-sky-200 hover:bg-sky-700 transition" data-i18n="nav_account">Personal account</a>
+        </div>
+    </div>
+</nav>
+
+    <div id="page-content">
+<!-- ══ HERO ══════════════════════════════════════════════ -->
+<section class="relative pt-20 pb-32 px-6 overflow-hidden">
+    <!-- Blobs -->
+    <div class="blob w-[600px] h-[600px] bg-sky-200/40 -top-40 -left-40"></div>
+    <div class="blob w-[400px] h-[400px] bg-blue-200/30 top-20 right-0"></div>
+
+    <div class="max-w-7xl mx-auto relative z-10">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+            <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-blue-50 text-sky-900 text-[11px] font-black uppercase mb-6 border border-blue-100">
+                    <span class="relative flex h-2 w-2 ping-dot text-sky-400">
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span>
+                    </span>
+                    <span data-i18n="hero_badge">Since 2019 · Seoul & Moscow</span>
+                </div>
+                <h1 class="text-5xl lg:text-6xl font-extrabold leading-[1.05] text-slate-900 mb-8" data-i18n="hero_h1">
+                    Мы строим<br>мост между<br><span class="text-sky-500 underline decoration-blue-200 decoration-8 underline-offset-4">пациентом</span><br>и Кореей
+                </h1>
+                <p class="text-lg text-slate-500 leading-relaxed max-w-lg" data-i18n="hero_desc">
+                    Smart K-Medi — первая интегрированная AI-платформа медицинского туризма, объединяющая выбор клиники, логистику и персональное сопровождение в одной экосистеме.
+                </p>
+            </div>
+
+            <!-- Floating cards -->
+            <div class="relative hidden lg:flex items-center justify-center h-[420px]">
+                <div class="absolute inset-0 bg-sky-400/10 rounded-full filter blur-[100px]"></div>
+
+                <!-- Ring -->
+                <div class="w-72 h-72 border-2 border-sky-300/30 rounded-full spin-slow absolute"></div>
+                <div class="w-56 h-56 border border-sky-200/40 rounded-full absolute" style="animation: spinSlow 14s linear infinite reverse;"></div>
+
+                <!-- Center badge -->
+                <div class="relative z-10 text-center">
+                    <div class="text-5xl font-black text-sky-900 italic tracking-tighter">2019</div>
+                    <div class="text-xs font-bold text-sky-400 uppercase tracking-widest mt-1" data-i18n="hero_founded">Founded</div>
+                </div>
+
+                <!-- Card 1 -->
+                <div class="float-card absolute top-4 right-4 bg-white p-5 rounded-3xl shadow-xl border border-slate-50 w-44">
+                    <div class="text-[10px] font-black text-sky-500 uppercase mb-1" data-i18n="card_mission_label">Mission</div>
+                    <div class="text-xs font-bold text-slate-700 leading-relaxed" data-i18n="card_mission_text">Make Korean medicine accessible to everyone</div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="float-card2 absolute bottom-4 left-4 bg-sky-900 p-5 rounded-3xl shadow-xl text-white w-44">
+                    <div class="text-[10px] font-black text-sky-400 uppercase mb-1" data-i18n="card_team_label">Team</div>
+                    <div class="text-3xl font-black">42</div>
+                    <div class="text-xs text-sky-300 mt-1" data-i18n="card_team_text">experts in 5 countries</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ STATS BAR ══════════════════════════════════════════ -->
+<section class="bg-sky-900 text-white py-14 px-6 reveal">
+    <div class="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+        <div>
+            <div class="text-4xl font-black mb-1" data-counter="2500">2,500+</div>
+            <div class="text-sm text-sky-300" data-i18n="stat1">Пациентов обслужено</div>
+        </div>
+        <div>
+            <div class="text-4xl font-black mb-1">98%</div>
+            <div class="text-sm text-sky-300" data-i18n="stat2">Уровень удовлетворённости</div>
+        </div>
+        <div>
+            <div class="text-4xl font-black mb-1">45</div>
+            <div class="text-sm text-sky-300" data-i18n="stat3">Партнёрских клиник</div>
+        </div>
+        <div>
+            <div class="text-4xl font-black mb-1">3</div>
+            <div class="text-sm text-sky-300" data-i18n="stat4">Языков поддержки</div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ MISSION & VALUES ══════════════════════════════════ -->
+<section class="py-28 px-6 bg-white">
+    <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-20 reveal">
+            <div class="text-sky-500 font-black text-[10px] uppercase tracking-[0.3em] mb-3 italic" data-i18n="values_label">Our Foundation</div>
+            <h2 class="text-4xl font-black text-slate-900" data-i18n="values_title">Почему мы делаем это</h2>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Value 1 -->
+            <div class="reveal reveal-delay-1 group p-8 bg-sky-50 rounded-[2.5rem] border border-sky-100 hover:bg-sky-900 hover:border-sky-900 transition-all duration-500">
+                <div class="w-14 h-14 bg-sky-900 group-hover:bg-sky-400 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500">
+                    <span class="text-2xl">🎯</span>
+                </div>
+                <h3 class="text-xl font-black text-slate-900 group-hover:text-white mb-3 transition-colors duration-300" data-i18n="val1_title">Точность</h3>
+                <p class="text-sm text-slate-500 group-hover:text-sky-200 leading-relaxed transition-colors duration-300" data-i18n="val1_text">AI-алгоритм анализирует более 120 параметров клиники, чтобы найти идеальное совпадение для каждого пациента.</p>
+            </div>
+            <!-- Value 2 -->
+            <div class="reveal reveal-delay-1 group p-8 bg-sky-50 rounded-[2.5rem] border border-sky-100 hover:bg-sky-900 hover:border-sky-900 transition-all duration-500">
+                <div class="w-14 h-14 bg-sky-900 group-hover:bg-sky-400 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500">
+                    <span class="text-2xl">🤝</span>
+                </div>
+                <h3 class="text-xl font-black text-slate-900 group-hover:text-white mb-3 transition-colors duration-300" data-i18n="val2_title">Прозрачность</h3>
+                <p class="text-sm text-slate-500 group-hover:text-sky-200 leading-relaxed transition-colors duration-300" data-i18n="val2_text">Никаких скрытых комиссий. Только официальные контракты, честные цены и полный контроль на каждом этапе.</p>
+            </div>
+            <!-- Value 3 -->
+            <div class="reveal reveal-delay-1 group p-8 bg-sky-50 rounded-[2.5rem] border border-sky-100 hover:bg-sky-900 hover:border-sky-900 transition-all duration-500">
+                <div class="w-14 h-14 bg-sky-900 group-hover:bg-sky-400 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500">
+                    <span class="text-2xl">💛</span>
+                </div>
+                <h3 class="text-xl font-black text-slate-900 group-hover:text-white mb-3 transition-colors duration-300" data-i18n="val3_title">Забота</h3>
+                <p class="text-sm text-slate-500 group-hover:text-sky-200 leading-relaxed transition-colors duration-300" data-i18n="val3_text">Личный координатор на русском языке с первого звонка до возвращения домой. Вы никогда не одни.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ══ TEAM ════════════════════════════════════════════════ -->
+<section class="py-28 px-6 bg-white">
+    <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-20 reveal">
+            <div class="text-sky-500 font-black text-[10px] uppercase tracking-[0.3em] mb-3 italic" data-i18n="team_label">People</div>
+            <h2 class="text-4xl font-black text-slate-900" data-i18n="team_title">Команда</h2>
+            <p class="text-slate-400 mt-3 max-w-lg mx-auto" data-i18n="team_desc">Медики, технологи и логисты — объединённые одной целью</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+            <div class="reveal reveal-delay-1 team-card relative bg-gradient-to-br from-sky-900 to-sky-800 rounded-[2.5rem] p-8 text-white overflow-hidden">
+                <div class="w-16 h-16 bg-sky-700 rounded-2xl flex items-center justify-center text-3xl mb-6">👨‍⚕️</div>
+                <div class="font-black text-lg mb-1" data-i18n="team1_name">Алексей Соколов</div>
+                <div class="text-sky-400 text-xs font-bold uppercase tracking-widest mb-3" data-i18n="team1_role">Основатель & CEO</div>
+                <p class="text-sky-200 text-xs leading-relaxed" data-i18n="team1_bio">15 лет в медицинском туризме. Бывший главный врач в международной клинике Сеула.</p>
+            </div>
+
+            <div class="reveal reveal-delay-2 team-card relative bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-xl overflow-hidden">
+                <div class="w-16 h-16 bg-sky-50 rounded-2xl flex items-center justify-center text-3xl mb-6">👩‍💻</div>
+                <div class="font-black text-lg mb-1 text-slate-900" data-i18n="team2_name">Мин Джи Пак</div>
+                <div class="text-sky-500 text-xs font-bold uppercase tracking-widest mb-3" data-i18n="team2_role">CTO & Co-founder</div>
+                <p class="text-slate-400 text-xs leading-relaxed" data-i18n="team2_bio">AI-инженер из KAIST. Разработала алгоритм подбора клиник с точностью 96%.</p>
+            </div>
+
+            <div class="reveal reveal-delay-3 team-card relative bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-xl overflow-hidden">
+                <div class="w-16 h-16 bg-sky-50 rounded-2xl flex items-center justify-center text-3xl mb-6">🌏</div>
+                <div class="font-black text-lg mb-1 text-slate-900" data-i18n="team3_name">Анна Ли</div>
+                <div class="text-sky-500 text-xs font-bold uppercase tracking-widest mb-3" data-i18n="team3_role">Head of Operations</div>
+                <p class="text-slate-400 text-xs leading-relaxed" data-i18n="team3_bio">Координирует сопровождение 300+ пациентов одновременно. Говорит на 4 языках.</p>
+            </div>
+
+            <div class="reveal reveal-delay-4 team-card relative bg-gradient-to-br from-slate-800 to-slate-900 rounded-[2.5rem] p-8 text-white overflow-hidden">
+                <div class="w-16 h-16 bg-slate-700 rounded-2xl flex items-center justify-center text-3xl mb-6">⚖️</div>
+                <div class="font-black text-lg mb-1" data-i18n="team4_name">Дмитрий Волков</div>
+                <div class="text-sky-400 text-xs font-bold uppercase tracking-widest mb-3" data-i18n="team4_role">Legal Director</div>
+                <p class="text-sky-200 text-xs leading-relaxed" data-i18n="team4_bio">Международный медицинский юрист. Защищает интересы пациентов в Корее, Германии и Турции.</p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ══ ACCREDITATION ═══════════════════════════════════════ -->
+<section class="py-20 px-6 bg-sky-50 reveal">
+    <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-12">
+            <div class="text-sky-500 font-black text-[10px] uppercase tracking-[0.3em] mb-3 italic" data-i18n="accred_label">Certificates & Partners</div>
+            <h2 class="text-3xl font-black text-slate-900" data-i18n="accred_title">Наши аккредитации</h2>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm text-center hover:shadow-lg transition">
+                <div class="text-3xl mb-3">🏅</div>
+                <div class="font-black text-sm text-slate-900 mb-1">JCI International</div>
+                <div class="text-[10px] text-slate-400 font-bold uppercase" data-i18n="accred_since">Since 2020</div>
+            </div>
+            <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm text-center hover:shadow-lg transition">
+                <div class="text-3xl mb-3">🇰🇷</div>
+                <div class="font-black text-sm text-slate-900 mb-1">K-Medical Tourism</div>
+                <div class="text-[10px] text-slate-400 font-bold uppercase" data-i18n="accred_since">Since 2021</div>
+            </div>
+            <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm text-center hover:shadow-lg transition">
+                <div class="text-3xl mb-3">🔒</div>
+                <div class="font-black text-sm text-slate-900 mb-1">GDPR & HIPAA</div>
+                <div class="text-[10px] text-slate-400 font-bold uppercase" data-i18n="accred_compliant">Compliant</div>
+            </div>
+            <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm text-center hover:shadow-lg transition">
+                <div class="text-3xl mb-3">⭐</div>
+                <div class="font-black text-sm text-slate-900 mb-1">ISO 9001:2015</div>
+                <div class="text-[10px] text-slate-400 font-bold uppercase" data-i18n="accred_certified">Certified</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ CTA ════════════════════════════════════════════════ -->
+<section class="relative py-28 px-6 overflow-hidden reveal">
+    <img src="images/shutterstock_1022274595.jpg" class="absolute inset-0 w-full h-full object-cover" />
+    <div class="absolute inset-0 bg-sky-900/80 backdrop-blur-sm"></div>
+    <div class="relative z-10 max-w-3xl mx-auto text-center text-white">
+        <h2 class="text-4xl lg:text-5xl font-black mb-6 leading-tight" data-i18n="cta_title">Готовы начать?<br><span class="text-sky-400">Мы рядом.</span></h2>
+        <p class="text-sky-200 text-lg mb-10 leading-relaxed" data-i18n="cta_desc">Оставьте заявку и наш координатор свяжется с вами в течение 2 часов — бесплатно и без обязательств.</p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="1aipage.html" class="bg-white text-sky-900 px-10 py-5 rounded-full font-black text-sm hover:bg-sky-50 transition shadow-2xl" data-i18n="cta_btn1">Начать AI-подбор</a>
+            <a href="tel:+78005553535" class="border-2 border-white/40 text-white px-10 py-5 rounded-full font-black text-sm hover:bg-white/10 transition" data-i18n="cta_btn2">Позвонить нам</a>
+        </div>
+    </div>
+</section>
+
+<!-- ══ FOOTER ══════════════════════════════════════════════ -->
+<footer class="bg-sky-900 text-slate-300 pt-20 pb-10 border-t border-sky-800">
+    <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+        <div class="space-y-6">
+            <div class="text-3xl font-extrabold text-white">Smart <span class="text-blue-500">K-Medi</span></div>
+            <p class="text-sm leading-relaxed text-slate-400" data-i18n="footer_desc">Мы используем искусственный интеллект, чтобы сделать высокотехнологичную медицину доступной для всех.</p>
+            <div class="flex gap-4">
+                <a href="#" class="w-10 h-10 rounded-full bg-sky-800 flex items-center justify-center hover:bg-sky-700 transition text-white">FB</a>
+                <a href="#" class="w-10 h-10 rounded-full bg-sky-800 flex items-center justify-center hover:bg-sky-700 transition text-white">IG</a>
+                <a href="#" class="w-10 h-10 rounded-full bg-sky-800 flex items-center justify-center hover:bg-sky-700 transition text-white">TG</a>
+            </div>
+        </div>
+        <div>
+            <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm" data-i18n="footer_col1">Направления</h4>
+            <ul class="space-y-4 text-sm">
+                <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_onco">Онкология</a></li>
+                <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_cardio">Кардиология</a></li>
+                <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_dent">Стоматология</a></li>
+                <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_plastic">Пластическая хирургия</a></li>
+                <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_checkup">Чек-ап программы</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm" data-i18n="footer_col2">Пациентам</h4>
+            <ul class="space-y-4 text-sm">
+                <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_how">Как это работает</a></li>
+                <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_search">Поиск клиники</a></li>
+                <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_insurance">Страхование</a></li>
+                <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_faq">FAQ</a></li>
+                <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_blog">Медицинский блог</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm" data-i18n="footer_col3">Контакты</h4>
+            <div class="space-y-4 text-sm">
+                <p class="flex items-start gap-3 text-slate-400"><span>📍</span><span data-i18n="footer_addr">123456, Москва, Пресненская наб., 12, офис 45</span></p>
+                <p class="flex items-center gap-3 font-bold text-white"><span>📞</span><span>8 (800) 555-35-35</span></p>
+                <p class="flex items-center gap-3 text-slate-400 italic"><span>✉️</span><span>support@smart_k_medi.com</span></p>
+            </div>
+        </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-6 pt-8 border-t border-sky-800 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
+        <p data-i18n="footer_copy">© 2026 Smart K-Medi Solutions. Все права защищены.</p>
+        <div class="flex gap-6">
+            <a href="#" class="hover:text-white transition" data-i18n="footer_privacy">Политика конфиденциальности</a>
+            <a href="#" class="hover:text-white transition" data-i18n="footer_terms">Пользовательское соглашение</a>
+        </div>
+    </div>
+</footer>
+
+<!-- Floating buttons -->
+<button id="ai-chatbot-btn" class="fixed bottom-6 right-6 z-50 text-white rounded-full flex items-center justify-center w-16 h-16 shadow-2xl backdrop-blur-md bg-sky-900/50 border border-white/60 hover:bg-white/20 transition">
+    <img src="images/ai.png" alt="AI" class="w-8 h-8">
+</button>
+<a href="tel:+82XXXXXXXXX" class="fixed bottom-6 left-6 z-50 text-white rounded-full px-6 py-4 font-bold text-sm flex items-center gap-3 backdrop-blur-md bg-green-500/30 border border-green-400/30 shadow-2xl hover:bg-green-400/30 transition">
+    <img src="images/phone.png" alt="Phone" class="w-5 h-5">
+    <span data-i18n="fab_phone">Срочно: +82-XXX-XXXX</span>
+</a>
+    </div>
+
+<script>
+/* ══════════════════════════════════════
+   TRANSLATIONS
+══════════════════════════════════════ */
+const T = {
+    ru: {
+        lang_title:'Выберите язык',
+        nav_destinations:'Направления', nav_catalog:'Каталог клиник',
+        nav_service:'Сервис', nav_about:'О нас', nav_account:'Личный кабинет',
+        hero_badge:'С 2019 · Сеул и Москва',
+        hero_h1:'Мы строим<br>мост между<br><span class="text-sky-500 underline decoration-blue-200 decoration-8 underline-offset-4">пациентом</span><br>и Кореей',
+        hero_desc:'Smart K-Medi — первая интегрированная AI-платформа медицинского туризма, объединяющая выбор клиники, логистику и персональное сопровождение в одной экосистеме.',
+        hero_founded:'Основана',
+        card_mission_label:'Миссия', card_mission_text:'Сделать корейскую медицину доступной каждому',
+        card_team_label:'Команда', card_team_text:'экспертов в 5 странах',
+        stat1:'Пациентов обслужено', stat2:'Уровень удовлетворённости',
+        stat3:'Партнёрских клиник', stat4:'Языков поддержки',
+        values_label:'Наша основа', values_title:'Почему мы делаем это',
+        val1_title:'Точность', val1_text:'AI-алгоритм анализирует десятки параметров клиник для подбора оптимального варианта каждому пациенту.',   
+        val2_title:'Прозрачность', val2_text:'Никаких скрытых комиссий. Только официальные контракты, честные цены и полный контроль на каждом этапе.',
+        val3_title:'Забота', val3_text:'Личный координатор на русском языке с первого звонка до возвращения домой. Вы никогда не одни.',
+        team_label:'Люди', team_title:'Команда', team_desc:'Медики, технологи и логисты — объединённые одной целью',
+        team1_name:'Алексей Соколов', team1_role:'Основатель & CEO', team1_bio:'15 лет в медицинском туризме. Бывший главный врач в международной клинике Сеула.',
+        team2_name:'Мин Джи Пак', team2_role:'CTO & Co-founder', team2_bio:'AI-инженер из KAIST. Разработала алгоритм подбора клиник с точностью 96%.',
+        team3_name:'Анна Ли', team3_role:'Head of Operations', team3_bio:'Координирует сопровождение 300+ пациентов одновременно. Говорит на 4 языках.',
+        team4_name:'Дмитрий Волков', team4_role:'Legal Director', team4_bio:'Международный медицинский юрист. Защищает интересы пациентов в Корее, Германии и Турции.',
+        accred_label:'Сертификаты & Партнёры', accred_title:'Наши аккредитации',
+        accred_since:'С', accred_compliant:'Соответствие', accred_certified:'Сертификат',
+        cta_title:'Готовы начать?<br><span class="text-sky-400">Мы рядом.</span>',
+        cta_desc:'Оставьте заявку и наш координатор свяжется с вами в течение 2 часов — бесплатно и без обязательств.',
+        cta_btn1:'Начать AI-подбор', cta_btn2:'Связаться с нами',
+        footer_desc:'Мы используем искусственный интеллект, чтобы сделать высокотехнологичную медицину доступной для всех.',
+        footer_col1:'Направления', footer_onco:'Онкология', footer_cardio:'Кардиология',
+        footer_dent:'Стоматология', footer_plastic:'Пластическая хирургия', footer_checkup:'Чек-ап программы',
+        footer_col2:'Пациентам', footer_how:'Как это работает', footer_search:'Поиск клиники',
+        footer_insurance:'Страхование', footer_faq:'FAQ', footer_blog:'Медицинский блог',
+        footer_col3:'Контакты', footer_addr:'123456, Москва, Пресненская наб., 12, офис 45',
+        footer_copy:'© 2026 Smart K-Medi Solutions. Все права защищены.',
+        footer_privacy:'Политика конфиденциальности', footer_terms:'Пользовательское соглашение',
+        fab_phone:'Срочно: +82-XXX-XXXX',
+    },
+    en: {
+        lang_title:'Select language',
+        nav_destinations:'Destinations', nav_catalog:'Clinic Catalog',
+        nav_service:'Service', nav_about:'About Us', nav_account:'Personal account',
+        hero_badge:'Since 2019 · Seoul & Moscow',
+        hero_h1:'We build<br>a bridge between<br><span class="text-sky-500 underline decoration-blue-200 decoration-8 underline-offset-4">patient</span><br>and Korea',
+        hero_desc:'Smart K-Medi is the first integrated AI medical tourism platform combining clinic selection, logistics and personal support in one ecosystem.',
+        hero_founded:'Founded',
+        card_mission_label:'Mission', card_mission_text:'Make Korean medicine accessible to everyone',
+        card_team_label:'Team', card_team_text:'experts in 5 countries',
+        stat1:'Patients served', stat2:'Satisfaction rate',
+        stat3:'Partner clinics', stat4:'Support languages',
+        values_label:'Our Foundation', values_title:'Why we do this',
+        val1_title:'Precision', val1_text:'Our AI algorithm analyzes dozens of clinic parameters to find the perfect match for each patient.',
+        val2_title:'Transparency', val2_text:'No hidden fees. Only official contracts, honest prices and full control at every stage.',
+        val3_title:'Care', val3_text:'A personal Russian-speaking coordinator from the first call to returning home. You are never alone.',
+        team_label:'People', team_title:'Our Team', team_desc:'Doctors, technologists and logistics experts — united by one goal',
+        team1_name:'Alexey Sokolov', team1_role:'Founder & CEO', team1_bio:'15 years in medical tourism. Former chief physician at an international clinic in Seoul.',
+        team2_name:'Min Ji Park', team2_role:'CTO & Co-founder', team2_bio:'AI engineer from KAIST. Developed the clinic matching algorithm with 96% accuracy.',
+        team3_name:'Anna Lee', team3_role:'Head of Operations', team3_bio:'Coordinates 300+ patients simultaneously. Speaks 4 languages.',
+        team4_name:'Dmitry Volkov', team4_role:'Legal Director', team4_bio:'International medical lawyer protecting patient interests in Korea, Germany and Turkey.',
+        accred_label:'Certificates & Partners', accred_title:'Our Accreditations',
+        accred_since:'Since', accred_compliant:'Compliant', accred_certified:'Certified',
+        cta_title:'Ready to start?<br><span class="text-sky-400">We\'re here.</span>',
+        cta_desc:'Submit a request and our coordinator will contact you within 2 hours — free and with no obligation.',
+        cta_btn1:'Start AI Selection', cta_btn2:'Conact Us',
+        footer_desc:'We use artificial intelligence to make high-tech medicine accessible to everyone.',
+        footer_col1:'Destinations', footer_onco:'Oncology', footer_cardio:'Cardiology',
+        footer_dent:'Dentistry', footer_plastic:'Plastic Surgery', footer_checkup:'Check-up Programs',
+        footer_col2:'For Patients', footer_how:'How it works', footer_search:'Clinic Search',
+        footer_insurance:'Insurance', footer_faq:'FAQ', footer_blog:'Medical Blog',
+        footer_col3:'Contacts', footer_addr:'123456, Moscow, Presnenskaya emb., 12, office 45',
+        footer_copy:'© 2026 Smart K-Medi Solutions. All rights reserved.',
+        footer_privacy:'Privacy Policy', footer_terms:'User Agreement',
+        fab_phone:'Urgent: +82-XXX-XXXX',
+    },
+    ko: {
+        lang_title:'언어 선택',
+        nav_destinations:'목적지', nav_catalog:'클리닉 목록',
+        nav_service:'서비스', nav_about:'회사 소개', nav_account:'개인 계정',
+        hero_badge:'2019년 설립 · 서울 & 모스크바',
+        hero_h1:'저희는<br><span class="text-sky-500 underline decoration-blue-200 decoration-8 underline-offset-4">환자</span>와<br>한국을 잇는<br>다리입니다',
+        hero_desc:'Smart K-Medi는 클리닉 선택, 물류, 개인 지원을 하나의 생태계에 통합한 최초의 AI 의료관광 플랫폼입니다.',
+        hero_founded:'설립',
+        card_mission_label:'미션', card_mission_text:'한국 의료를 모든 사람에게 접근 가능하게',
+        card_team_label:'팀', card_team_text:'5개국 전문가',
+        stat1:'서비스된 환자 수', stat2:'만족도',
+        stat3:'파트너 클리닉', stat4:'지원 언어',
+        values_label:'우리의 기반', values_title:'우리가 이 일을 하는 이유',
+        val1_title:'정밀도', val1_text:'AI 알고리즘이 수십 가지 클리닉 매개변수를 분석하여 각 환자에게 최적의 매칭을 제공합니다.',
+        val2_title:'투명성', val2_text:'숨겨진 수수료 없음. 공식 계약, 정직한 가격, 모든 단계에서 완전한 통제.',
+        val3_title:'배려', val3_text:'첫 번째 통화부터 귀국까지 개인 코디네이터가 함께합니다. 혼자가 아닙니다.',        team_label:'사람들', team_title:'우리 팀', team_desc:'의사, 기술자, 물류 전문가 — 하나의 목표로 뭉친',
+        team1_name:'알렉세이 소콜로프', team1_role:'창업자 & CEO', team1_bio:'의료관광 15년 경력. 서울 국제 클리닉 전 수석 의사.',
+        team2_name:'민지 박', team2_role:'CTO & 공동창업자', team2_bio:'KAIST AI 엔지니어. 96% 정확도의 클리닉 매칭 알고리즘 개발.',
+        team3_name:'안나 리', team3_role:'운영 총괄', team3_bio:'300명 이상의 환자를 동시에 코디네이션. 4개 언어 구사.',
+        team4_name:'드미트리 볼코프', team4_role:'법무 이사', team4_bio:'국제 의료 변호사. 한국, 독일, 터키에서 환자 권익 보호.',
+        accred_label:'인증서 & 파트너', accred_title:'우리의 인증',
+        accred_since:'취득', accred_compliant:'준수', accred_certified:'인증',
+        cta_title:'시작할 준비가 되셨나요?<br><span class="text-sky-400">저희가 함께합니다.</span>',
+        cta_desc:'신청서를 제출하시면 코디네이터가 2시간 이내에 연락드립니다 — 무료, 의무 없음.',
+        cta_btn1:'AI 선택 시작', cta_btn2:'문의하기',
+        footer_desc:'저희는 AI를 활용해 첨단 의료를 모든 사람에게 접근 가능하게 만듭니다.',
+        footer_col1:'목적지', footer_onco:'종양내과', footer_cardio:'심장내과',
+        footer_dent:'치과', footer_plastic:'성형외과', footer_checkup:'건강검진 프로그램',
+        footer_col2:'환자를 위해', footer_how:'이용 방법', footer_search:'클리닉 검색',
+        footer_insurance:'보험', footer_faq:'FAQ', footer_blog:'의료 블로그',
+        footer_col3:'연락처', footer_addr:'123456, 모스크바, 프레스넨스카야 둑, 12, 사무실 45',
+        footer_copy:'© 2026 Smart K-Medi Solutions. 모든 권리 보유.',
+        footer_privacy:'개인정보 처리방침', footer_terms:'이용약관',
+        fab_phone:'긴급: +82-XXX-XXXX',
+    }
+};
+
+/* ══════════════════════════════════════
+   APPLY TRANSLATIONS
+══════════════════════════════════════ */
+function applyLang(lang) {
+    const t = T[lang];
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (t[key] !== undefined) el.innerHTML = t[key];
+    });
+}
+
+/* ══════════════════════════════════════
+   LANG DROPDOWN
+══════════════════════════════════════ */
+let langOpen = false;
+
+function toggleLang(e) { e.stopPropagation(); langOpen ? closeLang() : openLang(); }
+function openLang() {
+    langOpen = true;
+    document.getElementById('lang-dropdown').classList.add('open');
+    document.getElementById('lang-chevron').classList.add('rotated');
+}
+function closeLang() {
+    langOpen = false;
+    document.getElementById('lang-dropdown').classList.remove('open');
+    document.getElementById('lang-chevron').classList.remove('rotated');
+}
+function selectLang(code, flag, label, el) {
+    document.getElementById('lang-flag').textContent    = flag;
+    document.getElementById('lang-current').textContent = label;
+    document.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
+    el.classList.add('active');
+    // ✅ localStorage только при ручном выборе
+    localStorage.setItem('kmedi_lang', code);
+    applyLang(code);
+    setTimeout(closeLang, 150);
+}
+document.addEventListener('click', e => {
+    if (!document.getElementById('lang-switcher').contains(e.target)) closeLang();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLang(); });
+
+
+    /* === PAGE TRANSITIONS — только #page-content === */
+    function initTransitions() {
+        document.addEventListener('click', e => {
+            // Ссылки
+            const link = e.target.closest('a');
+            if (link && link.hostname === window.location.hostname && !link.hash && link.target !== '_blank') {
+                e.preventDefault();
+                document.getElementById('page-content').classList.add('fade-out');
+                setTimeout(() => { window.location.href = link.href; }, 500);
+                return;
+            }
+            // Кнопки «Назад» — добавь data-back на любую кнопку
+            const backBtn = e.target.closest('[data-back]');
+            if (backBtn) {
+                e.preventDefault();
+                document.getElementById('page-content').classList.add('fade-out');
+                setTimeout(() => { history.back(); }, 500);
+            }
+        });
+    }
+
+    // Возврат через кнопку браузера «Назад» — перезапускаем fade-in
+    window.addEventListener('pageshow', e => {
+        if (e.persisted) {
+            const pc = document.getElementById('page-content');
+            pc.classList.remove('fade-out');
+            void pc.offsetWidth; // force reflow → перезапускает CSS animation
+        }
+    });
+
+    initTransitions();
+
+    document.getElementById('ai-chatbot-btn').addEventListener('click', () => {
+        alert('AI Chatbot coming soon!');
+    });
+
+/* ══════════════════════════════════════
+   SCROLL REVEAL
+══════════════════════════════════════ */
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+/* ══════════════════════════════════════
+   CHATBOT
+══════════════════════════════════════ */
+document.getElementById('ai-chatbot-btn').addEventListener('click', () => alert('AI Chatbot coming soon!'));
+
+/* ══════════════════════════════════════
+   INIT — читаем localStorage, НЕ перезаписываем
+══════════════════════════════════════ */
+(function init() {
+    const saved       = localStorage.getItem('kmedi_lang');
+    const browserLang = (navigator.language || 'ru').slice(0, 2).toLowerCase();
+    const supported   = ['en', 'ru', 'ko'];
+    const lang        = (saved && supported.includes(saved)) ? saved
+                      : (supported.includes(browserLang) ? browserLang : 'ru');
+    const langMap     = { ru: ['🇷🇺','RU'], en: ['🇬🇧','EN'], ko: ['🇰🇷','한국어'] };
+
+    document.getElementById('lang-flag').textContent    = langMap[lang][0];
+    document.getElementById('lang-current').textContent = langMap[lang][1];
+    document.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
+    const active = document.getElementById('opt-' + lang);
+    if (active) active.classList.add('active');
+    applyLang(lang);
+})();
+</script>
+
+</body>
+</html>

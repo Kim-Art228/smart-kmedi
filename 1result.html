@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Matching Results | Smart K-Medi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .match-card { transition: all 0.3s ease; }
+        .match-card:hover { transform: translateY(-4px); }
+        .ai-badge { animation: pulse-glow 2s infinite; }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(14, 116, 144, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(14, 116, 144, 0.5); }
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .hero-gradient { background: radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.05) 0%, rgba(255, 255, 255, 0) 50%); }
+        .fade { opacity: 0; animation: fadeIn 0.5s ease-in-out forwards !important; }
+        .fade-out { animation: fadeOut 0.5s ease-in-out forwards !important; }
+        @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+        [data-lang] { display: none; }
+        .lang-en [data-lang="en"],
+        .lang-ru [data-lang="ru"],
+        .lang-kr [data-lang="kr"] { display: inline; }
+        .lang-en [data-lang-block="en"],
+        .lang-ru [data-lang-block="ru"],
+        .lang-kr [data-lang-block="kr"] { display: block; }
+        [data-lang-block] { display: none; }
+
+        /* ── Lang Dropdown (identical to homepage) ── */
+        #lang-dropdown {
+            position: absolute; right: 0; top: calc(100% + 10px);
+            width: 220px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 1.25rem;
+            box-shadow: 0 20px 40px rgba(12,74,110,0.15);
+            padding: 0.5rem;
+            z-index: 9999;
+            opacity: 0; pointer-events: none;
+            transform: translateY(-6px);
+            transition: opacity 0.18s ease, transform 0.18s ease;
+        }
+        #lang-dropdown.open { opacity: 1 !important; pointer-events: all !important; transform: translateY(0) !important; }
+        #lang-chevron { transition: transform 0.25s ease; }
+        #lang-chevron.rotated { transform: rotate(180deg); }
+        .lang-option {
+            display: flex; align-items: center; gap: 0.75rem;
+            width: 100%; padding: 0.6rem 0.75rem;
+            border-radius: 0.75rem;
+            cursor: pointer; transition: background 0.15s;
+            background: none; border: none; text-align: left;
+        }
+        .lang-option:hover { background: #f0f9ff; }
+        .lang-option.active { background: #f0f9ff; }
+        .lang-check { margin-left: auto; color: #0ea5e9; font-weight: 900; font-size: 0.85rem; opacity: 0; transition: opacity 0.15s; }
+        .lang-option.active .lang-check { opacity: 1; }
+    </style>
+</head>
+<body class="bg-sky-50 lang-en fade">
+
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="1homepage.html"><div class="text-2xl font-black tracking-tighter text-sky-600 italic">Smart <span class="text-slate-800">K-Medi</span></div></a>
+            <div class="hidden lg:flex space-x-8 text-sm font-bold text-slate-600 uppercase">
+                <a href="#" class="hover:text-sky-600">
+                    <span data-lang="en">Specialties</span>
+                    <span data-lang="ru">Специальности</span>
+                    <span data-lang="kr">전문 분야</span>
+                </a>
+                <a href="#" class="hover:text-sky-600">
+                    <span data-lang="en">Clinic Catalog</span>
+                    <span data-lang="ru">Каталог клиник</span>
+                    <span data-lang="kr">클리닉 카탈로그</span>
+                </a>
+                <a href="#" class="hover:text-sky-600">
+                    <span data-lang="en">Services</span>
+                    <span data-lang="ru">Услуги</span>
+                    <span data-lang="kr">서비스</span>
+                </a>
+                <a href="#" class="hover:text-sky-600">
+                    <span data-lang="en">Documents</span>
+                    <span data-lang="ru">Документы</span>
+                    <span data-lang="kr">서류</span>
+                </a>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="relative" id="lang-switcher">
+                    <button onclick="toggleLangDropdown(event)" id="lang-trigger"
+                        class="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-full text-sm font-bold cursor-pointer hover:border-sky-400 hover:shadow-[0_0_0_3px_rgba(14,165,233,0.08)] transition-all">
+                        <span id="lang-flag-display">🇬🇧</span>
+                        <span id="lang-label-display">EN</span>
+                        <svg id="lang-chevron" class="w-3.5 h-3.5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div id="lang-dropdown" class="absolute right-0 top-[calc(100%+10px)] w-56 bg-white rounded-2xl border border-slate-200 shadow-[0_20px_40px_rgba(12,74,110,0.15)] p-2 z-50 opacity-0 pointer-events-none -translate-y-2 transition-all duration-200">
+                        <div class="text-[10px] font-bold uppercase tracking-widest text-slate-400 px-3 py-2 border-b border-slate-100 mb-1">Select language</div>
+                        <button onclick="selectLangDrop('ru','🇷🇺','RU',this)" class="lang-opt flex items-center gap-3 w-full px-3 py-2.5 rounded-xl hover:bg-sky-50 transition-colors text-left">
+                            <span class="text-2xl">🇷🇺</span>
+                            <div class="flex-1"><div class="text-sm font-semibold text-slate-700">Русский</div><div class="text-xs text-slate-400">Russian</div></div>
+                            <span class="opt-check text-sky-500 font-black text-sm opacity-0">✓</span>
+                        </button>
+                        <button onclick="selectLangDrop('en','🇬🇧','EN',this)" class="lang-opt flex items-center gap-3 w-full px-3 py-2.5 rounded-xl hover:bg-sky-50 transition-colors text-left bg-sky-50">
+                            <span class="text-2xl">🇬🇧</span>
+                            <div class="flex-1"><div class="text-sm font-semibold text-slate-700">English</div><div class="text-xs text-slate-400">English</div></div>
+                            <span class="opt-check text-sky-500 font-black text-sm">✓</span>
+                        </button>
+                        <button onclick="selectLangDrop('kr','🇰🇷','KR',this)" class="lang-opt flex items-center gap-3 w-full px-3 py-2.5 rounded-xl hover:bg-sky-50 transition-colors text-left">
+                            <span class="text-2xl">🇰🇷</span>
+                            <div class="flex-1"><div class="text-sm font-semibold text-slate-700">한국어</div><div class="text-xs text-slate-400">Korean</div></div>
+                            <span class="opt-check text-sky-500 font-black text-sm opacity-0">✓</span>
+                        </button>
+                    </div>
+                </div>
+                <a href="1clientpage.html" class="bg-sky-600 text-white px-6 py-2.5 rounded-full font-bold text-sm shadow-lg shadow-sky-200 hover:bg-sky-700 transition">
+                    <span data-lang="en">Personal account</span>
+                    <span data-lang="ru">Личный кабинет</span>
+                    <span data-lang="kr">개인 계정</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <div id="page-content">
+    <main class="max-w-7xl mx-auto px-6 py-12">
+        
+        <!-- AI Analysis Header -->
+        <div class="rounded-[2.5rem] mb-12 text-white relative overflow-hidden border border-white/20">
+          <img src="images/hero2.png" class="absolute inset-0 w-full h-full object-cover" />
+          <div class="absolute inset-0 bg-sky-900/60 backdrop-blur-sm"></div>
+          <div class="absolute top-0 right-0 w-96 h-96 bg-sky-400 rounded-full filter blur-[150px] opacity-20"></div>
+
+          <div class="relative z-10 p-10">
+            <div class="flex items-center gap-3 mb-6">
+              <img src="images/ai.png" alt="AI Icon" class="w-14 drop-shadow-[0_0_12px_rgba(56,189,248,0.6)]">
+              <div>
+                <h1 class="text-3xl font-extrabold" style="text-shadow: 0 0 30px rgba(255,255,255,0.3)">
+                    <span data-lang="en">AI Analysis Complete</span>
+                    <span data-lang="ru">Анализ ИИ завершён</span>
+                    <span data-lang="kr">AI 분석 완료</span>
+                </h1>
+                <p class="text-sky-200 text-sm">
+                    <span data-lang="en">Based on your medical profile and requirements</span>
+                    <span data-lang="ru">На основе вашего медицинского профиля и требований</span>
+                    <span data-lang="kr">귀하의 의료 프로필 및 요구사항을 기반으로</span>
+                </p>
+              </div>
+            </div>
+
+            <div class="grid md:grid-cols-4 gap-6 mt-8">
+              <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20 hover:bg-white/15 transition">
+                <div class="text-3xl font-black" style="text-shadow: 0 0 20px rgba(255,255,255,0.4)">5</div>
+                <div class="text-xs text-sky-200 uppercase font-bold mt-1">
+                    <span data-lang="en">Clinics Found</span>
+                    <span data-lang="ru">Клиники найдены</span>
+                    <span data-lang="kr">클리닉 찾음</span>
+                </div>
+              </div>
+              <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20 hover:bg-white/15 transition">
+                <div class="text-3xl font-black" style="text-shadow: 0 0 20px rgba(255,255,255,0.4)">98%</div>
+                <div class="text-xs text-sky-200 uppercase font-bold mt-1">
+                    <span data-lang="en">Best Match</span>
+                    <span data-lang="ru">Лучшее совпадение</span>
+                    <span data-lang="kr">최고 매칭</span>
+                </div>
+              </div>
+              <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20 hover:bg-white/15 transition">
+                <div class="text-3xl font-black" style="text-shadow: 0 0 20px rgba(255,255,255,0.4)">12</div>
+                <div class="text-xs text-sky-200 uppercase font-bold mt-1">
+                    <span data-lang="en">Specialists</span>
+                    <span data-lang="ru">Специалисты</span>
+                    <span data-lang="kr">전문의</span>
+                </div>
+              </div>
+              <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20 hover:bg-white/15 transition">
+                <div class="text-3xl font-black" style="text-shadow: 0 0 20px rgba(255,255,255,0.4)">3-7</div>
+                <div class="text-xs text-sky-200 uppercase font-bold mt-1">
+                    <span data-lang="en">Days Recovery</span>
+                    <span data-lang="ru">Дней восстановления</span>
+                    <span data-lang="kr">회복 일수</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-8 p-4 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20">
+              <p class="text-sm italic leading-relaxed text-sky-100">
+                <span class="font-bold text-white">
+                    <span data-lang="en">AI Analysis:</span>
+                    <span data-lang="ru">Анализ ИИ:</span>
+                    <span data-lang="kr">AI 분석:</span>
+                </span>
+                <span data-lang="en"> Your request for minimally invasive rhinoplasty with fast recovery matches perfectly with Seoul's top clinics specializing in Asian facial anatomy. All selected clinics have JCI accreditation and English-speaking coordinators.</span>
+                <span data-lang="ru"> Ваш запрос на малоинвазивную ринопластику с быстрым восстановлением идеально соответствует лучшим клиникам Сеула, специализирующимся на анатомии азиатского лица. Все выбранные клиники имеют аккредитацию JCI и координаторов, говорящих на русском языке.</span>
+                <span data-lang="kr"> 빠른 회복이 가능한 최소침습 코성형에 대한 귀하의 요청은 아시아 얼굴 해부학을 전문으로 하는 서울 최고 클리닉과 완벽하게 일치합니다. 선정된 모든 클리닉은 JCI 인증을 보유하고 한국어 코디네이터가 있습니다.</span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="bg-white rounded-2xl p-6 mb-8 border border-slate-100 shadow-sm">
+            <div class="flex flex-wrap gap-4 items-center">
+                <span class="text-sm font-bold text-slate-600 uppercase">
+                    <span data-lang="en">Sort by:</span>
+                    <span data-lang="ru">Сортировка:</span>
+                    <span data-lang="kr">정렬:</span>
+                </span>
+                <button class="px-4 py-2 bg-sky-600 text-white rounded-xl text-sm font-bold">
+                    <span data-lang="en">AI Match</span>
+                    <span data-lang="ru">AI Совпадение</span>
+                    <span data-lang="kr">AI 매칭</span>
+                </button>
+                <button class="px-4 py-2 bg-slate-50 text-slate-600 rounded-xl text-sm font-bold hover:bg-sky-50 transition">
+                    <span data-lang="en">Price</span>
+                    <span data-lang="ru">Цена</span>
+                    <span data-lang="kr">가격</span>
+                </button>
+                <button class="px-4 py-2 bg-slate-50 text-slate-600 rounded-xl text-sm font-bold hover:bg-sky-50 transition">
+                    <span data-lang="en">Rating</span>
+                    <span data-lang="ru">Рейтинг</span>
+                    <span data-lang="kr">평점</span>
+                </button>
+                <button class="px-4 py-2 bg-slate-50 text-slate-600 rounded-xl text-sm font-bold hover:bg-sky-50 transition">
+                    <span data-lang="en">Recovery Time</span>
+                    <span data-lang="ru">Время восстановления</span>
+                    <span data-lang="kr">회복 시간</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Clinic Results -->
+        <div class="space-y-6">
+            
+            <!-- Clinic Card #1 - Best Match -->
+            <div class="match-card bg-white rounded-[2.5rem] border-2 border-sky-600 overflow-hidden shadow-xl relative">
+                <div class="absolute top-6 right-6 ai-badge bg-sky-600 text-white px-4 py-2 rounded-full text-xs font-black uppercase tracking-wider z-10">
+                    🏆 <span data-lang="en">Best Match</span><span data-lang="ru">Лучший выбор</span><span data-lang="kr">최고 매칭</span>
+                </div>
+                
+                <div class="p-8">
+                    <div class="flex gap-8">
+                        <div class="w-48 h-48 bg-slate-200 rounded-3xl shrink-0 bg-[url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=400')] bg-cover"></div>
+                        
+                        <div class="flex-1">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <h3 class="text-2xl font-extrabold text-slate-900 mb-2">JK Plastic Surgery Center</h3>
+                                    <p class="text-sm text-slate-500 flex items-center gap-2 uppercase font-bold">
+                                        📍 Seoul, Gangnam | <span class="text-green-600">JCI Accredited</span> | ⭐ 4.9 (2,847 <span data-lang="en">reviews</span><span data-lang="ru">отзывов</span><span data-lang="kr">리뷰</span>)
+                                    </p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-5xl font-black text-sky-600 tracking-tighter">98%</div>
+                                    <div class="text-xs text-slate-400 font-bold uppercase">
+                                        <span data-lang="en">AI Match</span>
+                                        <span data-lang="ru">AI Совпадение</span>
+                                        <span data-lang="kr">AI 매칭</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-sky-50 border border-sky-200 rounded-2xl p-4 mb-6">
+                                <div class="flex items-start gap-3">
+                                    <img src="images/ai.png" alt="AI Insight Icon" class="w-6 mt-1">
+                                    <div class="text-sm text-slate-700 leading-relaxed">
+                                        <span class="font-bold text-sky-700">
+                                            <span data-lang="en">Why this clinic:</span>
+                                            <span data-lang="ru">Почему эта клиника:</span>
+                                            <span data-lang="kr">이 클리닉을 선택한 이유:</span>
+                                        </span>
+                                        <span data-lang="en"> Specializes in minimally invasive rhinoplasty with patented 3-day recovery protocol. Dr. Kim has 25+ years experience with Asian nose anatomy. 98% patient satisfaction rate for your procedure type.</span>
+                                        <span data-lang="ru"> Специализируется на малоинвазивной ринопластике с запатентованным протоколом восстановления за 3 дня. Доктор Ким имеет 25+ лет опыта работы с анатомией азиатского носа. 98% удовлетворённость пациентов по вашему типу процедуры.</span>
+                                        <span data-lang="kr"> 특허받은 3일 회복 프로토콜을 통한 최소침습 코성형을 전문으로 합니다. 김 박사는 아시아 코 해부학에 25년 이상의 경험을 보유하고 있습니다. 귀하의 시술 유형에 대한 환자 만족도 98%.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-4 mb-6">
+                                <div class="text-center p-3 bg-slate-50 rounded-xl">
+                                    <div class="text-2xl font-black text-slate-900">$4,200</div>
+                                    <div class="text-[10px] text-slate-500 uppercase font-bold">
+                                        <span data-lang="en">Starting Price</span>
+                                        <span data-lang="ru">Цена от</span>
+                                        <span data-lang="kr">시작 가격</span>
+                                    </div>
+                                </div>
+                                <div class="text-center p-3 bg-slate-50 rounded-xl">
+                                    <div class="text-2xl font-black text-slate-900">3-5 <span data-lang="en">days</span><span data-lang="ru">дн.</span><span data-lang="kr">일</span></div>
+                                    <div class="text-[10px] text-slate-500 uppercase font-bold">
+                                        <span data-lang="en">Recovery</span>
+                                        <span data-lang="ru">Восстановление</span>
+                                        <span data-lang="kr">회복</span>
+                                    </div>
+                                </div>
+                                <div class="text-center p-3 bg-slate-50 rounded-xl">
+                                    <div class="text-2xl font-black text-slate-900">15,000+</div>
+                                    <div class="text-[10px] text-slate-500 uppercase font-bold">
+                                        <span data-lang="en">Surgeries</span>
+                                        <span data-lang="ru">Операций</span>
+                                        <span data-lang="kr">수술 건수</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3">
+                                <button class="flex-1 py-4 bg-sky-600 text-white rounded-2xl font-bold hover:bg-sky-700 transition shadow-lg shadow-sky-200">
+                                    <span data-lang="en">Book Consultation</span>
+                                    <span data-lang="ru">Записаться на консультацию</span>
+                                    <span data-lang="kr">상담 예약</span>
+                                </button>
+                                <button class="px-6 py-4 bg-slate-100 text-slate-700 rounded-2xl font-bold hover:bg-slate-200 transition">
+                                    <span data-lang="en">View Details</span>
+                                    <span data-lang="ru">Подробнее</span>
+                                    <span data-lang="kr">자세히 보기</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clinic Card #2 -->
+            <div class="match-card bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden shadow-sm hover:shadow-lg">
+                <div class="p-8">
+                    <div class="flex gap-8">
+                        <div class="w-48 h-48 bg-slate-200 rounded-3xl shrink-0 bg-[url('https://images.unsplash.com/photo-1512678080530-7760d81faba6?auto=format&fit=crop&w=400')] bg-cover"></div>
+                        
+                        <div class="flex-1">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <h3 class="text-2xl font-extrabold text-slate-900 mb-2">BK Aesthetic Clinic</h3>
+                                    <p class="text-sm text-slate-500 flex items-center gap-2 uppercase font-bold">
+                                        📍 Seoul, Apgujeong | <span class="text-green-600">KAHF Certified</span> | ⭐ 4.8 (1,923 <span data-lang="en">reviews</span><span data-lang="ru">отзывов</span><span data-lang="kr">리뷰</span>)
+                                    </p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-5xl font-black text-slate-400 tracking-tighter">95%</div>
+                                    <div class="text-xs text-slate-400 font-bold uppercase">
+                                        <span data-lang="en">AI Match</span>
+                                        <span data-lang="ru">AI Совпадение</span>
+                                        <span data-lang="kr">AI 매칭</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 mb-6">
+                                <div class="text-sm text-slate-600 leading-relaxed">
+                                    <span class="font-bold">
+                                        <span data-lang="en">Key advantage:</span>
+                                        <span data-lang="ru">Ключевое преимущество:</span>
+                                        <span data-lang="kr">주요 장점:</span>
+                                    </span>
+                                    <span data-lang="en"> Lower price point with excellent results. Known for natural-looking outcomes. English-speaking staff available 24/7.</span>
+                                    <span data-lang="ru"> Доступная цена при отличных результатах. Известна естественно выглядящими результатами. Персонал, говорящий на русском языке, доступен 24/7.</span>
+                                    <span data-lang="kr"> 우수한 결과에 비해 저렴한 가격. 자연스러운 결과로 유명합니다. 한국어 직원 24/7 근무.</span>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-4 mb-6">
+                                <div class="text-center p-3 bg-slate-50 rounded-xl">
+                                    <div class="text-2xl font-black text-slate-900">$3,400</div>
+                                    <div class="text-[10px] text-slate-500 uppercase font-bold">
+                                        <span data-lang="en">Starting Price</span>
+                                        <span data-lang="ru">Цена от</span>
+                                        <span data-lang="kr">시작 가격</span>
+                                    </div>
+                                </div>
+                                <div class="text-center p-3 bg-slate-50 rounded-xl">
+                                    <div class="text-2xl font-black text-slate-900">5-7 <span data-lang="en">days</span><span data-lang="ru">дн.</span><span data-lang="kr">일</span></div>
+                                    <div class="text-[10px] text-slate-500 uppercase font-bold">
+                                        <span data-lang="en">Recovery</span>
+                                        <span data-lang="ru">Восстановление</span>
+                                        <span data-lang="kr">회복</span>
+                                    </div>
+                                </div>
+                                <div class="text-center p-3 bg-slate-50 rounded-xl">
+                                    <div class="text-2xl font-black text-slate-900">8,500+</div>
+                                    <div class="text-[10px] text-slate-500 uppercase font-bold">
+                                        <span data-lang="en">Surgeries</span>
+                                        <span data-lang="ru">Операций</span>
+                                        <span data-lang="kr">수술 건수</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3">
+                                <button class="flex-1 py-4 bg-sky-600 text-white rounded-2xl font-bold hover:bg-sky-700 transition shadow-lg shadow-sky-200">
+                                    <span data-lang="en">Book Consultation</span>
+                                    <span data-lang="ru">Записаться на консультацию</span>
+                                    <span data-lang="kr">상담 예약</span>
+                                </button>
+                                <button class="px-6 py-4 bg-slate-100 text-slate-700 rounded-2xl font-bold hover:bg-slate-200 transition">
+                                    <span data-lang="en">View Details</span>
+                                    <span data-lang="ru">Подробнее</span>
+                                    <span data-lang="kr">자세히 보기</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clinic Card #3 -->
+            <div class="match-card bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden shadow-sm hover:shadow-lg">
+                <div class="p-8">
+                    <div class="flex gap-8">
+                        <div class="w-48 h-48 bg-slate-200 rounded-3xl shrink-0 bg-[url('https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=400')] bg-cover"></div>
+                        
+                        <div class="flex-1">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <h3 class="text-2xl font-extrabold text-slate-900 mb-2">ID Hospital</h3>
+                                    <p class="text-sm text-slate-500 flex items-center gap-2 uppercase font-bold">
+                                        📍 Seoul, Gangnam | <span class="text-green-600">JCI Accredited</span> | ⭐ 4.7 (3,215 <span data-lang="en">reviews</span><span data-lang="ru">отзывов</span><span data-lang="kr">리뷰</span>)
+                                    </p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-5xl font-black text-slate-400 tracking-tighter">92%</div>
+                                    <div class="text-xs text-slate-400 font-bold uppercase">
+                                        <span data-lang="en">AI Match</span>
+                                        <span data-lang="ru">AI Совпадение</span>
+                                        <span data-lang="kr">AI 매칭</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 mb-6">
+                                <div class="text-sm text-slate-600 leading-relaxed">
+                                    <span class="font-bold">
+                                        <span data-lang="en">Key advantage:</span>
+                                        <span data-lang="ru">Ключевое преимущество:</span>
+                                        <span data-lang="kr">주요 장점:</span>
+                                    </span>
+                                    <span data-lang="en"> Large international department with coordinators in 15 languages. All-inclusive packages with accommodation and airport transfer.</span>
+                                    <span data-lang="ru"> Большой международный отдел с координаторами на 15 языках. Пакеты «всё включено» с проживанием и трансфером из аэропорта.</span>
+                                    <span data-lang="kr"> 15개 언어 코디네이터가 있는 대규모 국제 부서. 숙박 및 공항 이동을 포함한 올인클루시브 패키지.</span>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-4 mb-6">
+                                <div class="text-center p-3 bg-slate-50 rounded-xl">
+                                    <div class="text-2xl font-black text-slate-900">$5,100</div>
+                                    <div class="text-[10px] text-slate-500 uppercase font-bold">
+                                        <span data-lang="en">All Inclusive</span>
+                                        <span data-lang="ru">Всё включено</span>
+                                        <span data-lang="kr">올인클루시브</span>
+                                    </div>
+                                </div>
+                                <div class="text-center p-3 bg-slate-50 rounded-xl">
+                                    <div class="text-2xl font-black text-slate-900">4-6 <span data-lang="en">days</span><span data-lang="ru">дн.</span><span data-lang="kr">일</span></div>
+                                    <div class="text-[10px] text-slate-500 uppercase font-bold">
+                                        <span data-lang="en">Recovery</span>
+                                        <span data-lang="ru">Восстановление</span>
+                                        <span data-lang="kr">회복</span>
+                                    </div>
+                                </div>
+                                <div class="text-center p-3 bg-slate-50 rounded-xl">
+                                    <div class="text-2xl font-black text-slate-900">25,000+</div>
+                                    <div class="text-[10px] text-slate-500 uppercase font-bold">
+                                        <span data-lang="en">Surgeries</span>
+                                        <span data-lang="ru">Операций</span>
+                                        <span data-lang="kr">수술 건수</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3">
+                                <button class="flex-1 py-4 bg-sky-600 text-white rounded-2xl font-bold hover:bg-sky-700 transition shadow-lg shadow-sky-200">
+                                    <span data-lang="en">Book Consultation</span>
+                                    <span data-lang="ru">Записаться на консультацию</span>
+                                    <span data-lang="kr">상담 예약</span>
+                                </button>
+                                <button class="px-6 py-4 bg-slate-100 text-slate-700 rounded-2xl font-bold hover:bg-slate-200 transition">
+                                    <span data-lang="en">View Details</span>
+                                    <span data-lang="ru">Подробнее</span>
+                                    <span data-lang="kr">자세히 보기</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clinic Card #4 -->
+            <div class="match-card bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden shadow-sm hover:shadow-lg">
+                <div class="p-8">
+                    <div class="flex gap-8">
+                        <div class="w-48 h-48 bg-slate-200 rounded-3xl shrink-0 bg-[url('https://images.unsplash.com/photo-1519494140681-03116490b56f?auto=format&fit=crop&w=400')] bg-cover"></div>
+                        
+                        <div class="flex-1">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <h3 class="text-2xl font-extrabold text-slate-900 mb-2">The Face Dental Hospital</h3>
+                                    <p class="text-sm text-slate-500 flex items-center gap-2 uppercase font-bold">
+                                        📍 Seoul, Sinsa | <span class="text-green-600">Gov Approved</span> | ⭐ 4.6 (892 <span data-lang="en">reviews</span><span data-lang="ru">отзывов</span><span data-lang="kr">리뷰</span>)
+                                    </p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-5xl font-black text-slate-400 tracking-tighter">89%</div>
+                                    <div class="text-xs text-slate-400 font-bold uppercase">
+                                        <span data-lang="en">AI Match</span>
+                                        <span data-lang="ru">AI Совпадение</span>
+                                        <span data-lang="kr">AI 매칭</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 mb-6">
+                                <div class="text-sm text-slate-600 leading-relaxed">
+                                    <span class="font-bold">
+                                        <span data-lang="en">Key advantage:</span>
+                                        <span data-lang="ru">Ключевое преимущество:</span>
+                                        <span data-lang="kr">주요 장점:</span>
+                                    </span>
+                                    <span data-lang="en"> Specializes in combined facial surgery and dental work. Unique approach to facial harmony. Premium aftercare program.</span>
+                                    <span data-lang="ru"> Специализируется на комбинированной хирургии лица и стоматологии. Уникальный подход к гармонии лица. Премиальная программа послеоперационного ухода.</span>
+                                    <span data-lang="kr"> 안면 수술과 치과 치료를 결합한 시술 전문. 얼굴 조화에 대한 독창적인 접근법. 프리미엄 사후 관리 프로그램.</span>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-4 mb-6">
+                                <div class="text-center p-3 bg-slate-50 rounded-xl">
+                                    <div class="text-2xl font-black text-slate-900">$4,800</div>
+                                    <div class="text-[10px] text-slate-500 uppercase font-bold">
+                                        <span data-lang="en">Starting Price</span>
+                                        <span data-lang="ru">Цена от</span>
+                                        <span data-lang="kr">시작 가격</span>
+                                    </div>
+                                </div>
+                                <div class="text-center p-3 bg-slate-50 rounded-xl">
+                                    <div class="text-2xl font-black text-slate-900">5-8 <span data-lang="en">days</span><span data-lang="ru">дн.</span><span data-lang="kr">일</span></div>
+                                    <div class="text-[10px] text-slate-500 uppercase font-bold">
+                                        <span data-lang="en">Recovery</span>
+                                        <span data-lang="ru">Восстановление</span>
+                                        <span data-lang="kr">회복</span>
+                                    </div>
+                                </div>
+                                <div class="text-center p-3 bg-slate-50 rounded-xl">
+                                    <div class="text-2xl font-black text-slate-900">6,200+</div>
+                                    <div class="text-[10px] text-slate-500 uppercase font-bold">
+                                        <span data-lang="en">Surgeries</span>
+                                        <span data-lang="ru">Операций</span>
+                                        <span data-lang="kr">수술 건수</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3">
+                                <button class="flex-1 py-4 bg-sky-600 text-white rounded-2xl font-bold hover:bg-sky-700 transition shadow-lg shadow-sky-200">
+                                    <span data-lang="en">Book Consultation</span>
+                                    <span data-lang="ru">Записаться на консультацию</span>
+                                    <span data-lang="kr">상담 예약</span>
+                                </button>
+                                <button class="px-6 py-4 bg-slate-100 text-slate-700 rounded-2xl font-bold hover:bg-slate-200 transition">
+                                    <span data-lang="en">View Details</span>
+                                    <span data-lang="ru">Подробнее</span>
+                                    <span data-lang="kr">자세히 보기</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clinic Card #5 -->
+            <div class="match-card bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden shadow-sm hover:shadow-lg">
+                <div class="p-8">
+                    <div class="flex gap-8">
+                        <div class="w-48 h-48 bg-slate-200 rounded-3xl shrink-0 bg-[url('https://images.unsplash.com/photo-1581594549595-35f6edc7b762?auto=format&fit=crop&w=400')] bg-cover"></div>
+                        
+                        <div class="flex-1">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <h3 class="text-2xl font-extrabold text-slate-900 mb-2">VIP International Clinic</h3>
+                                    <p class="text-sm text-slate-500 flex items-center gap-2 uppercase font-bold">
+                                        📍 Seoul, Cheongdam | <span class="text-green-600">KAHF Certified</span> | ⭐ 4.8 (1,456 <span data-lang="en">reviews</span><span data-lang="ru">отзывов</span><span data-lang="kr">리뷰</span>)
+                                    </p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-5xl font-black text-slate-400 tracking-tighter">87%</div>
+                                    <div class="text-xs text-slate-400 font-bold uppercase">
+                                        <span data-lang="en">AI Match</span>
+                                        <span data-lang="ru">AI Совпадение</span>
+                                        <span data-lang="kr">AI 매칭</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 mb-6">
+                                <div class="text-sm text-slate-600 leading-relaxed">
+                                    <span class="font-bold">
+                                        <span data-lang="en">Key advantage:</span>
+                                        <span data-lang="ru">Ключевое преимущество:</span>
+                                        <span data-lang="kr">주요 장점:</span>
+                                    </span>
+                                    <span data-lang="en"> Luxury service with private recovery suites. VIP treatment throughout entire journey. Celebrity clientele.</span>
+                                    <span data-lang="ru"> Премиальный сервис с приватными палатами восстановления. VIP-обслуживание на протяжении всего пребывания. Клиентура знаменитостей.</span>
+                                    <span data-lang="kr"> 개인 회복실이 있는 럭셔리 서비스. 전 여정에 걸친 VIP 대우. 유명인 고객층.</span>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-4 mb-6">
+                                <div class="text-center p-3 bg-slate-50 rounded-xl">
+                                    <div class="text-2xl font-black text-slate-900">$6,900</div>
+                                    <div class="text-[10px] text-slate-500 uppercase font-bold">
+                                        <span data-lang="en">Premium</span>
+                                        <span data-lang="ru">Премиум</span>
+                                        <span data-lang="kr">프리미엄</span>
+                                    </div>
+                                </div>
+                                <div class="text-center p-3 bg-slate-50 rounded-xl">
+                                    <div class="text-2xl font-black text-slate-900">3-5 <span data-lang="en">days</span><span data-lang="ru">дн.</span><span data-lang="kr">일</span></div>
+                                    <div class="text-[10px] text-slate-500 uppercase font-bold">
+                                        <span data-lang="en">Recovery</span>
+                                        <span data-lang="ru">Восстановление</span>
+                                        <span data-lang="kr">회복</span>
+                                    </div>
+                                </div>
+                                <div class="text-center p-3 bg-slate-50 rounded-xl">
+                                    <div class="text-2xl font-black text-slate-900">4,100+</div>
+                                    <div class="text-[10px] text-slate-500 uppercase font-bold">
+                                        <span data-lang="en">Surgeries</span>
+                                        <span data-lang="ru">Операций</span>
+                                        <span data-lang="kr">수술 건수</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3">
+                                <button class="flex-1 py-4 bg-sky-600 text-white rounded-2xl font-bold hover:bg-sky-700 transition shadow-lg shadow-sky-200">
+                                    <span data-lang="en">Book Consultation</span>
+                                    <span data-lang="ru">Записаться на консультацию</span>
+                                    <span data-lang="kr">상담 예약</span>
+                                </button>
+                                <button class="px-6 py-4 bg-slate-100 text-slate-700 rounded-2xl font-bold hover:bg-slate-200 transition">
+                                    <span data-lang="en">View Details</span>
+                                    <span data-lang="ru">Подробнее</span>
+                                    <span data-lang="kr">자세히 보기</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Bottom CTA -->
+        <div class="mt-12 bg-sky-900 rounded-[2.5rem] p-10 text-white text-center">
+            <h3 class="text-2xl font-bold mb-3">
+                <span data-lang="en">Need Help Choosing?</span>
+                <span data-lang="ru">Нужна помощь с выбором?</span>
+                <span data-lang="kr">선택에 도움이 필요하신가요?</span>
+            </h3>
+            <p class="text-sky-200 mb-6 max-w-2xl mx-auto">
+                <span data-lang="en">Our AI coordinator can schedule video consultations with all matched clinics and help you make the final decision based on your specific needs.</span>
+                <span data-lang="ru">Наш ИИ-координатор может назначить видеоконсультации со всеми подобранными клиниками и помочь вам принять окончательное решение исходя из ваших конкретных потребностей.</span>
+                <span data-lang="kr">저희 AI 코디네이터가 매칭된 모든 클리닉과의 화상 상담을 예약하고 귀하의 특정 요구에 맞게 최종 결정을 내리는 데 도움을 드릴 수 있습니다.</span>
+            </p>
+            <button class="bg-white text-sky-900 px-8 py-4 rounded-2xl font-bold hover:bg-sky-50 transition shadow-lg">
+                <span data-lang="en">Talk to AI Coordinator</span>
+                <span data-lang="ru">Поговорить с ИИ-координатором</span>
+                <span data-lang="kr">AI 코디네이터와 상담</span>
+            </button>
+        </div>
+
+    </main>
+
+    <footer class="bg-sky-900 text-slate-300 pt-20 pb-10 border-t border-sky-800 mt-24">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+            <div class="space-y-6">
+                <div class="text-3xl font-extrabold text-white">Smart <span class="text-sky-400">K-Medi</span></div>
+                <p class="text-sm leading-relaxed text-slate-400">
+                    <span data-lang="en">We use artificial intelligence to make high-tech medicine accessible to everyone. Clinic selection, logistics, and 24/7 care for your health.</span>
+                    <span data-lang="ru">Мы используем искусственный интеллект, чтобы сделать высокотехнологичную медицину доступной для каждого. Подбор клиники, логистика и круглосуточная забота о вашем здоровье.</span>
+                    <span data-lang="kr">저희는 인공지능을 활용해 첨단 의료를 모든 분께 접근 가능하게 합니다. 클리닉 선정, 물류, 그리고 건강을 위한 24/7 케어.</span>
+                </p>
+                <div class="flex gap-4">
+                    <a href="#" class="w-10 h-10 rounded-full bg-sky-800 flex items-center justify-center hover:bg-sky-700 transition text-white">FB</a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-sky-800 flex items-center justify-center hover:bg-sky-700 transition text-white">IG</a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-sky-800 flex items-center justify-center hover:bg-sky-700 transition text-white">TG</a>
+                </div>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm">
+                    <span data-lang="en">Specialties</span>
+                    <span data-lang="ru">Специальности</span>
+                    <span data-lang="kr">전문 분야</span>
+                </h4>
+                <ul class="space-y-4 text-sm">
+                    <li><a href="#" class="hover:text-sky-400 transition"><span data-lang="en">Oncology</span><span data-lang="ru">Онкология</span><span data-lang="kr">종양학</span></a></li>
+                    <li><a href="#" class="hover:text-sky-400 transition"><span data-lang="en">Cardiology</span><span data-lang="ru">Кардиология</span><span data-lang="kr">심장학</span></a></li>
+                    <li><a href="#" class="hover:text-sky-400 transition"><span data-lang="en">Dentistry</span><span data-lang="ru">Стоматология</span><span data-lang="kr">치과</span></a></li>
+                    <li><a href="#" class="hover:text-sky-400 transition"><span data-lang="en">Plastic Surgery</span><span data-lang="ru">Пластическая хирургия</span><span data-lang="kr">성형외과</span></a></li>
+                    <li><a href="#" class="hover:text-sky-400 transition"><span data-lang="en">Check-up Programs</span><span data-lang="ru">Программы чекапа</span><span data-lang="kr">건강검진 프로그램</span></a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm">
+                    <span data-lang="en">For Patients</span>
+                    <span data-lang="ru">Пациентам</span>
+                    <span data-lang="kr">환자 안내</span>
+                </h4>
+                <ul class="space-y-4 text-sm">
+                    <li><a href="#" class="hover:text-sky-400 transition"><span data-lang="en">How it Works</span><span data-lang="ru">Как это работает</span><span data-lang="kr">이용 방법</span></a></li>
+                    <li><a href="#" class="hover:text-sky-400 transition"><span data-lang="en">Clinic Search</span><span data-lang="ru">Поиск клиники</span><span data-lang="kr">클리닉 검색</span></a></li>
+                    <li><a href="#" class="hover:text-sky-400 transition"><span data-lang="en">Insurance</span><span data-lang="ru">Страхование</span><span data-lang="kr">보험</span></a></li>
+                    <li><a href="#" class="hover:text-sky-400 transition">FAQ</a></li>
+                    <li><a href="#" class="hover:text-sky-400 transition"><span data-lang="en">Medical Blog</span><span data-lang="ru">Медицинский блог</span><span data-lang="kr">의료 블로그</span></a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm">
+                    <span data-lang="en">Contacts</span>
+                    <span data-lang="ru">Контакты</span>
+                    <span data-lang="kr">연락처</span>
+                </h4>
+                <div class="space-y-4 text-sm">
+                    <p class="flex items-start gap-3 text-slate-400">
+                        <span class="text-sky-400">📍</span> 123456, Moscow, Presnenskaya Emb., 12, Office 45
+                    </p>
+                    <p class="flex items-center gap-3 font-bold text-white">
+                        <span class="text-sky-400">📞</span> 8 (800) 555-35-35
+                    </p>
+                    <p class="flex items-center gap-3 text-slate-400 italic">
+                        <span class="text-sky-400">✉️</span> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9af3f4fcf5dae9f7fbe8eef1f7fffef3b4f9f5f7">[email&#160;protected]</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-6 pt-8 border-t border-sky-800 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
+            <p>© 2026 Smart K-Medi Solutions. <span data-lang="en">All rights reserved.</span><span data-lang="ru">Все права защищены.</span><span data-lang="kr">모든 권리 보유.</span></p>
+            <div class="flex gap-6">
+                <a href="#" class="hover:text-white transition">
+                    <span data-lang="en">Privacy Policy</span>
+                    <span data-lang="ru">Политика конфиденциальности</span>
+                    <span data-lang="kr">개인정보처리방침</span>
+                </a>
+                <a href="#" class="hover:text-white transition">
+                    <span data-lang="en">User Agreement</span>
+                    <span data-lang="ru">Пользовательское соглашение</span>
+                    <span data-lang="kr">이용 약관</span>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- AI Chatbot Floating Button -->
+    <button id="ai-chatbot-btn" aria-label="Open AI Chatbot" class="fixed bottom-6 right-6 z-50 text-white rounded-full flex items-center justify-center w-16 h-16 transition-all focus:outline-none focus:ring-2 focus:ring-sky-400/80 shadow-2xl shadow-sky-900/40 backdrop-blur-md bg-sky-900/50 border border-white/60 hover:bg-white/20 hover:border-white/40 hover:shadow-sky-500/30">
+        <img src="images/ai.png" alt="AI Chatbot" class="w-8 h-8">
+    </button>
+    
+    <a href="tel:+82XXXXXXXXX" class="fixed bottom-6 left-6 z-50 text-white rounded-full px-6 py-4 font-bold text-sm flex items-center gap-3 transition-all backdrop-blur-md bg-green-500/30 border border-green-400/30 shadow-2xl shadow-green-900/30 hover:bg-green-400/30 hover:border-green-400/50 hover:shadow-green-500/40">
+        <img src="images/phone.png" alt="Phone Icon" class="w-5 h-5">
+        Urgent: +82-XXX-XXXX
+    </a>
+    </div>
+
+
+    <script>
+
+/* ── Page transitions ── */
+    /* === PAGE TRANSITIONS — только #page-content === */
+    function initTransitions() {
+        document.addEventListener('click', e => {
+            // Ссылки
+            const link = e.target.closest('a');
+            if (link && link.hostname === window.location.hostname && !link.hash && link.target !== '_blank') {
+                e.preventDefault();
+                document.getElementById('page-content').classList.add('fade-out');
+                setTimeout(() => { window.location.href = link.href; }, 500);
+                return;
+            }
+            // Кнопки «Назад» — добавь data-back на любую кнопку
+            const backBtn = e.target.closest('[data-back]');
+            if (backBtn) {
+                e.preventDefault();
+                document.getElementById('page-content').classList.add('fade-out');
+                setTimeout(() => { history.back(); }, 500);
+            }
+        });
+    }
+
+    // Возврат через кнопку браузера «Назад» — перезапускаем fade-in
+    window.addEventListener('pageshow', e => {
+        if (e.persisted) {
+            const pc = document.getElementById('page-content');
+            pc.classList.remove('fade-out');
+            void pc.offsetWidth; // force reflow → перезапускает CSS animation
+        }
+    });
+
+    initTransitions();
+
+    document.getElementById('ai-chatbot-btn').addEventListener('click', () => {
+        alert('AI Chatbot coming soon!');
+    });
+
+        const langMeta = {
+            en: { flag: '🇬🇧', label: 'EN' },
+            ru: { flag: '🇷🇺', label: 'RU' },
+            kr: { flag: '🇰🇷', label: 'KR' }
+        };
+        let currentLang = 'en';
+
+        function setLang(lang) {
+            currentLang = lang;
+            localStorage.setItem('kmedi_lang', lang);
+            document.body.className = document.body.className.replace(/lang-\w+/, '').trim() + ' lang-' + lang;
+            document.getElementById('lang-flag-display').textContent = langMeta[lang].flag;
+            document.getElementById('lang-label-display').textContent = langMeta[lang].label;
+        }
+
+        // Восстанавливаем язык при загрузке
+        (function() {
+            const saved = localStorage.getItem('kmedi_lang');
+            const lang = (saved && langMeta[saved]) ? saved : 'en';
+            const activeBtn = document.querySelector(`.lang-opt[onclick*="'${lang}'"]`);
+            if (activeBtn) {
+                document.querySelectorAll('.lang-opt').forEach(o => {
+                    o.classList.remove('bg-sky-50');
+                    o.querySelector('.opt-check').classList.add('opacity-0');
+                });
+                activeBtn.classList.add('bg-sky-50');
+                activeBtn.querySelector('.opt-check').classList.remove('opacity-0');
+            }
+            setLang(lang);
+        })();
+
+        function toggleLangDropdown(e) {
+            e.stopPropagation();
+            const dd = document.getElementById('lang-dropdown');
+            dd.classList.contains('open') ? closeDrop() : openDrop();
+        }
+        function openDrop() {
+            document.getElementById('lang-dropdown').classList.add('open');
+            document.getElementById('lang-chevron').classList.add('rotated');
+        }
+        function closeDrop() {
+            document.getElementById('lang-dropdown').classList.remove('open');
+            document.getElementById('lang-chevron').classList.remove('rotated');
+        }
+        function selectLangDrop(code, flag, label, el) {
+            document.getElementById('lang-flag-display').textContent = flag;
+            document.getElementById('lang-label-display').textContent = label;
+            document.querySelectorAll('.lang-opt').forEach(o => {
+                o.classList.remove('bg-sky-50');
+                o.querySelector('.opt-check').classList.add('opacity-0');
+            });
+            el.classList.add('bg-sky-50');
+            el.querySelector('.opt-check').classList.remove('opacity-0');
+            setLang(code);
+            setTimeout(closeDrop, 150);
+        }
+        document.addEventListener('click', e => {
+            if (!document.getElementById('lang-switcher').contains(e.target)) closeDrop();
+        });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrop(); });
+    </script>

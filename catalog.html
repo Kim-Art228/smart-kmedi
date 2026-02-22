@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Clinic Catalog | Smart K-Medi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .hero-gradient { background: radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.05) 0%, rgba(255, 255, 255, 0) 50%); }
+        .clinic-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .clinic-card:hover { transform: translateY(-8px); box-shadow: 0 25px 50px -12px rgba(12, 74, 110, 0.15); }
+
+        /* List view */
+        .view-list .grid-container { grid-template-columns: 1fr !important; }
+        .view-list .clinic-card { display: flex; flex-direction: row; height: 280px; }
+        .view-list .clinic-card img { width: 350px; height: 100%; }
+
+        .fade { opacity: 0; animation: fadeIn 0.5s ease-in-out forwards !important; }
+        .fade-out { animation: fadeOut 0.5s ease-in-out forwards !important; }
+        @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+        input[type="range"] { accent-color: #0ea5e9; }
+
+        /* ── Lang dropdown ── */
+        #lang-dropdown {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 10px);
+            width: 224px;
+            background: #fff;
+            border-radius: 20px;
+            border: 1.5px solid #e2e8f0;
+            box-shadow: 0 20px 40px rgba(12,74,110,.15);
+            padding: 8px;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-8px);
+            transition: opacity .22s ease, transform .22s ease;
+        }
+        #lang-dropdown.open {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateY(0);
+        }
+        .lang-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-family: inherit;
+            text-align: left;
+            transition: background .15s;
+        }
+        .lang-option:hover { background: #f0f9ff; }
+        .lang-option.active { background: #eff6ff; }
+        .lang-option.active .lang-name { color: #0284c7; font-weight: 700; }
+        .lang-option .lang-check { margin-left: auto; color: #0284c7; font-weight: 900; font-size: 14px; opacity: 0; transition: opacity .15s; }
+        .lang-option.active .lang-check { opacity: 1; }
+        .flag-img { font-size: 22px; flex-shrink: 0; }
+        .lang-name { font-size: 13px; font-weight: 600; color: #334155; }
+        .lang-sub  { font-size: 11px; color: #94a3b8; margin-top: 1px; }
+        #lang-chevron { transition: transform .25s ease; }
+        #lang-chevron.rotated { transform: rotate(180deg); }
+    </style>
+</head>
+<body class="bg-sky-50 text-slate-900 hero-gradient min-h-screen fade">
+
+    <nav class="sticky top-0 z-50 bg-white/30 backdrop-blur-lg border border-white/20 shadow px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="1homepage.html"><div class="text-2xl font-black tracking-tighter text-sky-400 italic">Smart <span class="text-sky-900 italic-none">K-Medi</span></div></a>
+            <div class="hidden lg:flex space-x-8 text-sm font-bold text-slate-600 uppercase">
+                <a href="#" class="hover:text-sky-900 drop-shadow-[0_0_20px_rgba(56,189,248,0.8)]" data-i18n="nav_destinations">Destinations</a>
+                <a href="catalog.html" class="hover:text-sky-900 drop-shadow-[0_0_20px_rgba(56,189,248,0.8)]" data-i18n="nav_catalog">Clinic Catalog</a>
+                <a href="services.html" class="hover:text-sky-900 drop-shadow-[0_0_20px_rgba(56,189,248,0.8)]" data-i18n="nav_service">Service</a>
+                <a href="aboutus.html" class="hover:text-sky-900 drop-shadow-[0_0_20px_rgba(56,189,248,0.8)]" data-i18n="nav_docs">About us</a>
+            </div>
+            <div class="flex items-center gap-3">
+                <!-- Lang switcher -->
+                <div class="relative" id="lang-switcher">
+                    <button onclick="toggleLang(event)" id="lang-trigger"
+                        class="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-full text-sm font-bold cursor-pointer hover:border-sky-400 hover:shadow-[0_0_0_3px_rgba(14,165,233,0.08)] transition-all">
+                        <span id="lang-flag">🇷🇺</span>
+                        <span id="lang-current">RU</span>
+                        <svg id="lang-chevron" class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div id="lang-dropdown">
+                        <div class="text-[10px] font-bold uppercase tracking-widest text-slate-400 px-3 py-2 border-b border-slate-100 mb-1" data-i18n="lang_title">Select language</div>
+                        <button onclick="selectLang('ru','🇷🇺','RU',this)" class="lang-option active" id="opt-ru">
+                            <span class="flag-img">🇷🇺</span>
+                            <div class="flex-1"><div class="lang-name">Русский</div><div class="lang-sub">Russian</div></div>
+                            <span class="lang-check">✓</span>
+                        </button>
+                        <button onclick="selectLang('en','🇬🇧','EN',this)" class="lang-option" id="opt-en">
+                            <span class="flag-img">🇬🇧</span>
+                            <div class="flex-1"><div class="lang-name">English</div><div class="lang-sub">English</div></div>
+                            <span class="lang-check">✓</span>
+                        </button>
+                        <button onclick="selectLang('ko','🇰🇷','한국어',this)" class="lang-option" id="opt-ko">
+                            <span class="flag-img">🇰🇷</span>
+                            <div class="flex-1"><div class="lang-name">한국어</div><div class="lang-sub">Korean</div></div>
+                            <span class="lang-check">✓</span>
+                        </button>
+                    </div>
+                </div>
+                <a href="1clientpage.html" class="bg-sky-600 text-white px-6 py-2.5 rounded-full font-bold text-sm shadow-lg shadow-sky-200 hover:bg-sky-700 transition" data-i18n="nav_account">Personal account</a>
+            </div>
+        </div>
+    </nav>
+
+    <div id="page-content">
+    <main class="max-w-7xl mx-auto px-6 py-10">
+        <div class="grid lg:grid-cols-[320px_1fr] gap-10">
+
+            <aside class="space-y-6">
+                <div class="bg-white p-8 rounded-[3rem] shadow-2xl shadow-sky-900/5 border border-white/60 sticky top-28">
+                    <div class="flex items-center justify-between mb-8">
+                        <h3 class="font-black text-xs uppercase tracking-[0.2em] text-sky-900 italic" data-i18n="filter_title">Smart Filters</h3>
+                        <button class="text-[10px] font-bold text-sky-500 uppercase" data-i18n="filter_reset">Reset</button>
+                    </div>
+                    <div class="space-y-10">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-3 ml-1" data-i18n="filter_search_label">Search clinic</label>
+                            <input type="text" data-i18n-placeholder="filter_search_ph" placeholder="Name or service..." class="w-full bg-sky-50/50 border-none rounded-2xl px-5 py-3 text-sm focus:ring-2 ring-sky-200 transition">
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-3">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase ml-1" data-i18n="filter_budget">Budget (USD)</label>
+                                <span class="text-[10px] font-black text-sky-600">$5,000+</span>
+                            </div>
+                            <input type="range" class="w-full h-1.5 bg-sky-100 rounded-lg appearance-none cursor-pointer">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-4 ml-1" data-i18n="filter_rating">Clinic rating</label>
+                            <div class="flex gap-2">
+                                <button class="flex-1 py-2 rounded-xl bg-sky-900 text-white text-[10px] font-bold italic">4.5+</button>
+                                <button class="flex-1 py-2 rounded-xl bg-sky-50 text-slate-400 text-[10px] font-bold border border-sky-100 hover:bg-white transition">4.8+</button>
+                                <button class="flex-1 py-2 rounded-xl bg-sky-50 text-slate-400 text-[10px] font-bold border border-sky-100 hover:bg-white transition">5.0</button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-4 ml-1" data-i18n="filter_accred">Accreditation</label>
+                            <div class="space-y-3">
+                                <label class="flex items-center gap-3 group cursor-pointer">
+                                    <div class="w-5 h-5 rounded-md border-2 border-sky-100 group-hover:border-sky-400 flex items-center justify-center transition"><div class="w-2 h-2 bg-sky-500 rounded-sm"></div></div>
+                                    <span class="text-xs font-bold text-slate-600">JCI International</span>
+                                </label>
+                                <label class="flex items-center gap-3 group cursor-pointer">
+                                    <div class="w-5 h-5 rounded-md border-2 border-sky-100 group-hover:border-sky-400 transition"></div>
+                                    <span class="text-xs font-bold text-slate-600">K-Medical Tourism</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="w-full mt-12 bg-sky-50 py-4 rounded-2xl text-sky-900 font-black text-[10px] uppercase tracking-widest hover:bg-sky-100 transition" data-i18n="filter_btn">Apply AI Selection</button>
+                </div>
+            </aside>
+
+            <section id="catalog-content">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 px-2">
+                    <div>
+                        <div class="text-sky-500 font-black text-[10px] uppercase tracking-[0.3em] mb-2 italic" data-i18n="catalog_label">Verified Institutions</div>
+                        <h1 class="text-4xl font-black text-slate-900 tracking-tight" data-i18n="catalog_title">Catalog <span class="text-sky-900/20 italic">2026</span></h1>
+                    </div>
+                    <div class="flex items-center gap-4 bg-white/80 p-2 rounded-3xl shadow-sm border border-white">
+                        <div class="flex bg-sky-50 rounded-2xl p-1">
+                            <button onclick="setView('grid')" id="btn-grid" class="p-2.5 rounded-xl bg-white shadow-sm text-sky-600 transition">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                            </button>
+                            <button onclick="setView('list')" id="btn-list" class="p-2.5 rounded-xl text-slate-400 hover:text-sky-600 transition">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path></svg>
+                            </button>
+                        </div>
+                        <select class="bg-transparent text-xs font-bold text-slate-500 pr-8 outline-none border-none cursor-pointer">
+                            <option data-i18n="sort_popular">Popular first</option>
+                            <option data-i18n="sort_rating">By rating</option>
+                            <option data-i18n="sort_price">By price (min)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="grid-wrapper" class="grid md:grid-cols-2 gap-8 grid-container transition-all duration-500">
+
+                    <div class="clinic-card bg-white rounded-[3rem] overflow-hidden shadow-xl shadow-sky-900/5 border border-white group">
+                        <div class="h-56 relative overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                            <div class="absolute inset-0 bg-gradient-to-t from-sky-900/60 to-transparent opacity-60"></div>
+                            <div class="absolute top-6 right-6 bg-white/90 backdrop-blur px-4 py-1.5 rounded-full text-[10px] font-black uppercase text-sky-900" data-i18n="badge_top">Top Rated</div>
+                        </div>
+                        <div class="p-8">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xl font-black text-slate-900 leading-tight">Asan Medical Center</h3>
+                                <div class="flex items-center gap-1 text-orange-400 font-black text-sm"><span>★</span> 4.9</div>
+                            </div>
+                            <p class="text-xs text-slate-400 font-bold mb-6 italic" data-i18n="clinic1_spec">Seoul • Oncology, Cardiology, Transplantology</p>
+                            <div class="flex items-center justify-between border-t border-slate-50 pt-6">
+                                <div class="flex gap-2">
+                                    <span class="w-8 h-8 rounded-full bg-sky-50 flex items-center justify-center text-[10px] font-bold text-sky-600">JCI</span>
+                                    <span class="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center text-[10px] font-bold text-emerald-600">VIP</span>
+                                </div>
+                                <button class="text-sky-900 font-black text-[10px] uppercase tracking-widest flex items-center gap-2 group-hover:gap-3 transition-all" data-i18n="btn_view">View <span class="text-lg leading-none">→</span></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clinic-card bg-white rounded-[3rem] overflow-hidden shadow-xl shadow-sky-900/5 border border-white group">
+                        <div class="h-56 relative overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1586773860418-d3b97978c65c?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                            <div class="absolute top-6 right-6 bg-sky-500 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Smart-Tech</div>
+                        </div>
+                        <div class="p-8">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xl font-black text-slate-900 leading-tight">Samsung Medical Center</h3>
+                                <div class="flex items-center gap-1 text-orange-400 font-black text-sm"><span>★</span> 4.8</div>
+                            </div>
+                            <p class="text-xs text-slate-400 font-bold mb-6 italic" data-i18n="clinic2_spec">Seoul • High-tech medicine, Neurosurgery</p>
+                            <div class="flex items-center justify-between border-t border-slate-50 pt-6">
+                                <div class="text-[10px] font-bold text-slate-400" data-i18n="clinic2_price">From $1,200 / Check-up</div>
+                                <button class="text-sky-900 font-black text-[10px] uppercase tracking-widest flex items-center gap-2 group-hover:gap-3 transition-all" data-i18n="btn_view">View <span class="text-lg leading-none">→</span></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clinic-card bg-white rounded-[3rem] overflow-hidden shadow-xl shadow-sky-900/5 border border-white group">
+                        <div class="h-56 relative overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1512678080530-7760d81faba6?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-8">
+                            <h3 class="text-xl font-black text-slate-900 mb-2">Severance Hospital</h3>
+                            <p class="text-xs text-slate-400 font-bold mb-6 italic" data-i18n="clinic3_spec">Yonsei Univ • Robotic Da Vinci Surgery</p>
+                            <div class="flex items-center justify-between border-t border-slate-50 pt-6">
+                                <span class="text-orange-400 font-bold text-sm">★ 5.0</span>
+                                <button class="text-sky-900 font-black text-[10px] uppercase tracking-widest" data-i18n="btn_view">View →</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clinic-card bg-white rounded-[3rem] overflow-hidden shadow-xl shadow-sky-900/5 border border-white group">
+                        <div class="h-56 relative overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1538108197017-c1a966b36e9d?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-8">
+                            <h3 class="text-xl font-black text-slate-900 mb-2">SNUH National Hospital</h3>
+                            <p class="text-xs text-slate-400 font-bold mb-6 italic" data-i18n="clinic4_spec">Seoul National University Hospital • Research</p>
+                            <div class="flex items-center justify-between border-t border-slate-50 pt-6">
+                                <span class="text-orange-400 font-bold text-sm">★ 4.9</span>
+                                <button class="text-sky-900 font-black text-[10px] uppercase tracking-widest" data-i18n="btn_view">View →</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clinic-card bg-white rounded-[3rem] overflow-hidden shadow-xl shadow-sky-900/5 border border-white group">
+                        <div class="h-56 relative overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-8">
+                            <h3 class="text-xl font-black text-slate-900 mb-2">JK Plastic Surgery</h3>
+                            <p class="text-xs text-slate-400 font-bold mb-6 italic" data-i18n="clinic5_spec">Gangnam • World-class aesthetic medicine</p>
+                            <div class="flex items-center justify-between border-t border-slate-50 pt-6">
+                                <span class="text-orange-400 font-bold text-sm">★ 5.0</span>
+                                <button class="text-sky-900 font-black text-[10px] uppercase tracking-widest" data-i18n="btn_view">View →</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clinic-card bg-white rounded-[3rem] overflow-hidden shadow-xl shadow-sky-900/5 border border-white group">
+                        <div class="h-56 relative overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-8">
+                            <h3 class="text-xl font-black text-slate-900 mb-2">Chaum Clinic</h3>
+                            <p class="text-xs text-slate-400 font-bold mb-6 italic" data-i18n="clinic6_spec">Wellness & Anti-aging • Premium service</p>
+                            <div class="flex items-center justify-between border-t border-slate-50 pt-6">
+                                <span class="text-orange-400 font-bold text-sm">★ 4.9</span>
+                                <button class="text-sky-900 font-black text-[10px] uppercase tracking-widest" data-i18n="btn_view">View →</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="bg-sky-900 text-slate-300 pt-20 pb-10 border-t border-sky-800">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+            <div class="space-y-6">
+                <div class="text-3xl font-extrabold text-white">Smart <span class="text-blue-500">K-Medi</span></div>
+                <p class="text-sm leading-relaxed text-slate-400" data-i18n="footer_desc">We use artificial intelligence to make high-tech medicine accessible to everyone.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="w-10 h-10 rounded-full bg-sky-800 flex items-center justify-center hover:bg-sky-700 transition text-white">FB</a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-sky-800 flex items-center justify-center hover:bg-sky-700 transition text-white">IG</a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-sky-800 flex items-center justify-center hover:bg-sky-700 transition text-white">TG</a>
+                </div>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm" data-i18n="footer_col1">Destinations</h4>
+                <ul class="space-y-4 text-sm">
+                    <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_onco">Oncology</a></li>
+                    <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_cardio">Cardiology</a></li>
+                    <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_dent">Dentistry</a></li>
+                    <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_plastic">Plastic Surgery</a></li>
+                    <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_checkup">Check-up Programs</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm" data-i18n="footer_col2">For Patients</h4>
+                <ul class="space-y-4 text-sm">
+                    <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_how">How it works</a></li>
+                    <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_search_link">Clinic Search</a></li>
+                    <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_insurance">Insurance</a></li>
+                    <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_faq">FAQ</a></li>
+                    <li><a href="#" class="hover:text-sky-300 transition" data-i18n="footer_blog">Medical Blog</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm" data-i18n="footer_col3">Contacts</h4>
+                <div class="space-y-4 text-sm">
+                    <p class="flex items-start gap-3 text-slate-400"><span>📍</span><span data-i18n="footer_addr">123456, Moscow, Presnenskaya emb., 12, office 45</span></p>
+                    <p class="flex items-center gap-3 font-bold text-white"><span>📞</span><span>8 (800) 555-35-35</span></p>
+                    <p class="flex items-center gap-3 text-slate-400 italic"><span>✉️</span><span>support@smart_k_medi.com</span></p>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-6 pt-8 border-t border-sky-800 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
+            <p data-i18n="footer_copy">© 2026 Smart K-Medi Solutions. All rights reserved.</p>
+            <div class="flex gap-6">
+                <a href="#" class="hover:text-white transition" data-i18n="footer_privacy">Privacy Policy</a>
+                <a href="#" class="hover:text-white transition" data-i18n="footer_terms">User Agreement</a>
+            </div>
+        </div>
+    </footer>
+
+    <button id="ai-chatbot-btn" aria-label="Open AI Chatbot" class="fixed bottom-6 right-6 z-50 text-white rounded-full flex items-center justify-center w-16 h-16 transition-all focus:outline-none focus:ring-2 focus:ring-sky-400/80 shadow-2xl shadow-sky-900/40 backdrop-blur-md bg-sky-900/50 border border-white/60 hover:bg-white/20 hover:border-white/40 hover:shadow-sky-500/30">
+        <img src="images/ai.png" alt="AI Chatbot" class="w-8 h-8">
+    </button>
+    <a href="tel:+82XXXXXXXXX" class="fixed bottom-6 left-6 z-50 text-white rounded-full px-6 py-4 font-bold text-sm flex items-center gap-3 transition-all backdrop-blur-md bg-green-500/30 border border-green-400/30 shadow-2xl shadow-green-900/30 hover:bg-green-400/30 hover:border-green-400/50 hover:shadow-green-500/40">
+        <img src="images/phone.png" alt="Phone Icon" class="w-5 h-5">
+        <span data-i18n="fab_phone">Urgent: +82-XXX-XXXX</span>
+    </a>
+    </div>
+<script>
+/* ══════════════════════════════════════
+   TRANSLATIONS
+══════════════════════════════════════ */
+const T = {
+    ru: {
+        lang_title:'Выберите язык',
+        nav_destinations:'Направления', nav_catalog:'Каталог клиник', nav_service:'Сервис', nav_docs:'О нас', nav_account:'Личный кабинет',
+        filter_title:'Smart Фильтры', filter_reset:'Сбросить',
+        filter_search_label:'Поиск клиники', filter_search_ph:'Название или услуга...',
+        filter_budget:'Бюджет (USD)', filter_rating:'Рейтинг клиники',
+        filter_accred:'Аккредитация', filter_btn:'Применить AI подбор',
+        catalog_label:'Проверенные учреждения',
+        catalog_title:'Каталог <span class="text-sky-900/20 italic">2026</span>',
+        sort_popular:'Сначала популярные', sort_rating:'По рейтингу', sort_price:'По цене (мин)',
+        badge_top:'Топ рейтинг',
+        clinic1_spec:'Сеул • Онкология, Кардиология, Трансплантология',
+        clinic2_spec:'Сеул • Высокотехнологичная медицина, Нейрохирургия',
+        clinic2_price:'От $1,200 / Чек-ап',
+        clinic3_spec:'Yonsei Univ • Роботизированная хирургия Да Винчи',
+        clinic4_spec:'Госпиталь Сеульского Университета • Исследования',
+        clinic5_spec:'Каннам • Эстетическая медицина мирового уровня',
+        clinic6_spec:'Wellness & Anti-aging • Премиум сервис',
+        btn_view:'Смотреть <span class="text-lg leading-none">→</span>',
+        footer_desc:'Мы используем искусственный интеллект, чтобы сделать высокотехнологичную медицину доступной для всех.',
+        footer_col1:'Направления', footer_onco:'Онкология', footer_cardio:'Кардиология', footer_dent:'Стоматология', footer_plastic:'Пластическая хирургия', footer_checkup:'Чек-ап программы',
+        footer_col2:'Пациентам', footer_how:'Как это работает', footer_search_link:'Поиск клиники', footer_insurance:'Страхование', footer_faq:'FAQ', footer_blog:'Медицинский блог',
+        footer_col3:'Контакты', footer_addr:'123456, Москва, Пресненская наб., 12, офис 45',
+        footer_copy:'© 2026 Smart K-Medi Solutions. Все права защищены.',
+        footer_privacy:'Политика конфиденциальности', footer_terms:'Пользовательское соглашение',
+        fab_phone:'Срочно: +82-XXX-XXXX',
+    },
+    en: {
+        lang_title:'Select language',
+        nav_destinations:'Destinations', nav_catalog:'Clinic Catalog', nav_service:'Service', nav_docs:'About Us', nav_account:'Personal account',
+        filter_title:'Smart Filters', filter_reset:'Reset',
+        filter_search_label:'Search clinic', filter_search_ph:'Name or service...',
+        filter_budget:'Budget (USD)', filter_rating:'Clinic rating',
+        filter_accred:'Accreditation', filter_btn:'Apply AI Selection',
+        catalog_label:'Verified Institutions',
+        catalog_title:'Catalog <span class="text-sky-900/20 italic">2026</span>',
+        sort_popular:'Popular first', sort_rating:'By rating', sort_price:'By price (min)',
+        badge_top:'Top Rated',
+        clinic1_spec:'Seoul • Oncology, Cardiology, Transplantology',
+        clinic2_spec:'Seoul • High-tech medicine, Neurosurgery',
+        clinic2_price:'From $1,200 / Check-up',
+        clinic3_spec:'Yonsei Univ • Robotic Da Vinci Surgery',
+        clinic4_spec:'Seoul National University Hospital • Research',
+        clinic5_spec:'Gangnam • World-class aesthetic medicine',
+        clinic6_spec:'Wellness & Anti-aging • Premium service',
+        btn_view:'View <span class="text-lg leading-none">→</span>',
+        footer_desc:'We use artificial intelligence to make high-tech medicine accessible to everyone.',
+        footer_col1:'Destinations', footer_onco:'Oncology', footer_cardio:'Cardiology', footer_dent:'Dentistry', footer_plastic:'Plastic Surgery', footer_checkup:'Check-up Programs',
+        footer_col2:'For Patients', footer_how:'How it works', footer_search_link:'Clinic Search', footer_insurance:'Insurance', footer_faq:'FAQ', footer_blog:'Medical Blog',
+        footer_col3:'Contacts', footer_addr:'123456, Moscow, Presnenskaya emb., 12, office 45',
+        footer_copy:'© 2026 Smart K-Medi Solutions. All rights reserved.',
+        footer_privacy:'Privacy Policy', footer_terms:'User Agreement',
+        fab_phone:'Urgent: +82-XXX-XXXX',
+    },
+    ko: {
+        lang_title:'언어 선택',
+        nav_destinations:'목적지', nav_catalog:'클리닉 목록', nav_service:'서비스', nav_docs:'회사 소개', nav_account:'개인 계정',
+        filter_title:'스마트 필터', filter_reset:'초기화',
+        filter_search_label:'클리닉 검색', filter_search_ph:'이름 또는 서비스...',
+        filter_budget:'예산 (USD)', filter_rating:'클리닉 평점',
+        filter_accred:'인증', filter_btn:'AI 선택 적용',
+        catalog_label:'검증된 의료 기관',
+        catalog_title:'카탈로그 <span class="text-sky-900/20 italic">2026</span>',
+        sort_popular:'인기순', sort_rating:'평점순', sort_price:'가격순 (최저)',
+        badge_top:'최고 평점',
+        clinic1_spec:'서울 • 종양내과, 심장내과, 이식외과',
+        clinic2_spec:'서울 • 첨단 의학, 신경외과',
+        clinic2_price:'$1,200부터 / 건강검진',
+        clinic3_spec:'연세대학교 • 다빈치 로봇 수술',
+        clinic4_spec:'서울대학교 병원 • 연구',
+        clinic5_spec:'강남 • 세계적 수준의 미용 의학',
+        clinic6_spec:'웰니스 & 안티에이징 • 프리미엄 서비스',
+        btn_view:'보기 <span class="text-lg leading-none">→</span>',
+        footer_desc:'저희는 AI를 활용해 첨단 의료를 모든 사람에게 접근 가능하게 만듭니다.',
+        footer_col1:'목적지', footer_onco:'종양내과', footer_cardio:'심장내과', footer_dent:'치과', footer_plastic:'성형외과', footer_checkup:'건강검진 프로그램',
+        footer_col2:'환자를 위해', footer_how:'이용 방법', footer_search_link:'클리닉 검색', footer_insurance:'보험', footer_faq:'FAQ', footer_blog:'의료 블로그',
+        footer_col3:'연락처', footer_addr:'123456, 모스크바, 프레스넨스카야 둑, 12, 사무실 45',
+        footer_copy:'© 2026 Smart K-Medi Solutions. 모든 권리 보유.',
+        footer_privacy:'개인정보 처리방침', footer_terms:'이용약관',
+        fab_phone:'긴급: +82-XXX-XXXX',
+    }
+};
+
+/* ══════════════════════════════════════
+   APPLY TRANSLATIONS
+══════════════════════════════════════ */
+function applyLang(lang) {
+    const t = T[lang];
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (t[key] !== undefined) el.innerHTML = t[key];
+    });
+    // Placeholders отдельно
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.dataset.i18nPlaceholder;
+        if (t[key] !== undefined) el.placeholder = t[key];
+    });
+}
+
+/* ══════════════════════════════════════
+   LANG DROPDOWN
+══════════════════════════════════════ */
+let langOpen = false;
+
+function toggleLang(e) {
+    e.stopPropagation();
+    langOpen ? closeLang() : openLang();
+}
+function openLang() {
+    langOpen = true;
+    document.getElementById('lang-dropdown').classList.add('open');
+    document.getElementById('lang-chevron').classList.add('rotated');
+}
+function closeLang() {
+    langOpen = false;
+    document.getElementById('lang-dropdown').classList.remove('open');
+    document.getElementById('lang-chevron').classList.remove('rotated');
+}
+function selectLang(code, flag, label, el) {
+    // Обновляем кнопку
+    document.getElementById('lang-flag').textContent    = flag;
+    document.getElementById('lang-current').textContent = label;
+    // Сбрасываем active
+    document.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
+    el.classList.add('active');
+    // Применяем переводы
+    applyLang(code);
+    // Сохраняем в localStorage
+    localStorage.setItem('kmedi_lang', code);
+    setTimeout(closeLang, 150);
+}
+
+document.addEventListener('click', e => {
+    if (!document.getElementById('lang-switcher').contains(e.target)) closeLang();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLang(); });
+
+/* ══════════════════════════════════════
+   VIEW TOGGLE (grid / list)
+══════════════════════════════════════ */
+function setView(view) {
+    const btnGrid = document.getElementById('btn-grid');
+    const btnList = document.getElementById('btn-list');
+    if (view === 'list') {
+        document.body.classList.add('view-list');
+        btnList.classList.add('bg-white','shadow-sm','text-sky-600');
+        btnList.classList.remove('text-slate-400');
+        btnGrid.classList.remove('bg-white','shadow-sm','text-sky-600');
+        btnGrid.classList.add('text-slate-400');
+    } else {
+        document.body.classList.remove('view-list');
+        btnGrid.classList.add('bg-white','shadow-sm','text-sky-600');
+        btnGrid.classList.remove('text-slate-400');
+        btnList.classList.remove('bg-white','shadow-sm','text-sky-600');
+        btnList.classList.add('text-slate-400');
+    }
+}
+
+/* ══════════════════════════════════════
+   PAGE TRANSITIONS
+══════════════════════════════════════ */
+    /* === PAGE TRANSITIONS — только #page-content === */
+    function initTransitions() {
+        document.addEventListener('click', e => {
+            // Ссылки
+            const link = e.target.closest('a');
+            if (link && link.hostname === window.location.hostname && !link.hash && link.target !== '_blank') {
+                e.preventDefault();
+                document.getElementById('page-content').classList.add('fade-out');
+                setTimeout(() => { window.location.href = link.href; }, 500);
+                return;
+            }
+            // Кнопки «Назад» — добавь data-back на любую кнопку
+            const backBtn = e.target.closest('[data-back]');
+            if (backBtn) {
+                e.preventDefault();
+                document.getElementById('page-content').classList.add('fade-out');
+                setTimeout(() => { history.back(); }, 500);
+            }
+        });
+    }
+
+    // Возврат через кнопку браузера «Назад» — перезапускаем fade-in
+    window.addEventListener('pageshow', e => {
+        if (e.persisted) {
+            const pc = document.getElementById('page-content');
+            pc.classList.remove('fade-out');
+            void pc.offsetWidth; // force reflow → перезапускает CSS animation
+        }
+    });
+
+    initTransitions();
+
+    document.getElementById('ai-chatbot-btn').addEventListener('click', () => {
+        alert('AI Chatbot coming soon!');
+    });
+    
+    /* ══════════════════════════════════════
+   INIT — localStorage + автоязык
+══════════════════════════════════════ */
+(function() {
+    const saved       = localStorage.getItem('kmedi_lang');
+    const browserLang = (navigator.language || 'ru').slice(0,2).toLowerCase();
+    const supported   = ['en','ru','ko'];
+    const lang        = (saved && supported.includes(saved)) ? saved
+                      : (supported.includes(browserLang) ? browserLang : 'ru');
+    const langMap     = { ru:['🇷🇺','RU'], en:['🇬🇧','EN'], ko:['🇰🇷','한국어'] };
+
+    document.getElementById('lang-flag').textContent    = langMap[lang][0];
+    document.getElementById('lang-current').textContent = langMap[lang][1];
+    document.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
+    const active = document.getElementById('opt-' + lang);
+    if (active) active.classList.add('active');
+    applyLang(lang);
+})();
+</script>
+
+</body>
+</html>
